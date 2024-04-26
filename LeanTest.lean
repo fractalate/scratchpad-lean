@@ -209,3 +209,154 @@ example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
   rw [compl_compl] at h1
   rw [compl_compl] at h1
   exact h1
+
+
+-- --------------------------------- --
+--   Intersection World - Level 1    --
+-- --------------------------------- --
+example (x : U) (A B : Set U) (h : x ∈ A ∧ x ∈ B) : x ∈ A := by
+  exact h.left
+
+-- --------------------------------- --
+--   Intersection World - Level 2    --
+-- --------------------------------- --
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  rewrite [Set.mem_inter_iff x A B] at h
+  exact h.right
+
+-- Without the rewrite.
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  have h2 : x ∈ A ∧ x ∈ B := h
+  exact h2.right
+
+-- And it seems to understand this also, automatically pulling out x ∈ B from the intersection.
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  exact h.right
+
+-- --------------------------------- --
+--   Intersection World - Level 3    --
+-- --------------------------------- --
+example (A B : Set U) : A ∩ B ⊆ A := by
+  intro x xAB
+  exact xAB.left
+
+example (A B : Set U) : A ∩ B ⊆ A := by
+  intro x xAB
+  have h2 : x ∈ A ∧ x ∈ B := xAB
+  exact h2.left
+
+example (A B : Set U) : A ∩ B ⊆ A := by
+  intro x xAB
+  rewrite [Set.mem_inter_iff x A B] at xAB
+  exact xAB.left
+
+-- --------------------------------- --
+--   Intersection World - Level 4    --
+-- --------------------------------- --
+example (x : U) (A B : Set U) (h1 : x ∈ A) (h2 : x ∈ B) : x ∈ A ∩ B := by
+  exact And.intro h1 h2
+
+-- --------------------------------- --
+--   Intersection World - Level 5    --
+-- --------------------------------- --
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x xA
+  have xB : x ∈ B := h1 xA
+  have xC : x ∈ C := h2 xA
+  exact And.intro xB xC
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x
+  intro xA
+  rewrite [Set.mem_inter_iff x B C]
+  exact And.intro (h1 xA) (h2 xA)
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x
+  intro xA
+  rewrite [Set.mem_inter_iff x B C]
+  exact And.intro (h1 xA) (h2 xA)
+
+-- --------------------------------- --
+--   Intersection World - Level 6    --
+-- --------------------------------- --
+theorem inter_subset_swap (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+  intro x xAB
+  exact And.intro xAB.right xAB.left
+
+-- With rewrites.
+theorem inter_subset_swap2 (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+  intro x xAB
+  rewrite [Set.mem_inter_iff x B A]
+  rewrite [Set.mem_inter_iff x A B] at xAB
+  exact And.intro xAB.right xAB.left
+
+-- --------------------------------- --
+--   Intersection World - Level 7    --
+-- --------------------------------- --
+theorem inter_comm (A B : Set U) : A ∩ B = B ∩ A := by
+  apply Set.Subset.antisymm
+  intro x xAB
+  exact And.intro xAB.right xAB.left
+  intro x xAB
+  exact And.intro xAB.right xAB.left
+
+-- Using the previous leve's theorems.
+theorem inter_comm2 (A B : Set U) : A ∩ B = B ∩ A := by
+  apply Set.Subset.antisymm
+  exact inter_subset_swap A B
+  exact inter_subset_swap B A
+
+-- --------------------------------- --
+--   Intersection World - Level 8    --
+-- --------------------------------- --
+theorem inter_assoc (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  have xABC : (x ∈ A ∧ x ∈ B) ∧ x ∈ C := xABC
+  have xAB : x ∈ A ∧ x ∈ B := xABC.left
+  have xC : x ∈ C := xABC.right
+  exact And.intro xAB.left (And.intro xAB.right xC)
+
+  intro xABC
+  have xABC : x ∈ A ∧ (x ∈ B ∧ x ∈ C) := xABC
+  have xA : x ∈ A := xABC.left
+  have xBC : x ∈ B ∧ x ∈ C := xABC.right
+  exact And.intro (And.intro xA xBC.left) xBC.right
+
+theorem inter_assoc2 (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  rewrite [Set.mem_inter_iff]
+  rewrite [Set.mem_inter_iff]
+  rewrite [Set.mem_inter_iff] at xABC
+  rewrite [Set.mem_inter_iff] at xABC
+  have xA : x ∈ A := xABC.left.left
+  have xB : x ∈ B := xABC.left.right
+  have xC : x ∈ C := xABC.right
+  exact And.intro xA (And.intro xB xC)
+
+  intro xABC
+  rewrite [Set.mem_inter_iff]
+  rewrite [Set.mem_inter_iff]
+  rewrite [Set.mem_inter_iff] at xABC
+  rewrite [Set.mem_inter_iff] at xABC
+  have xA : x ∈ A := xABC.left
+  have xB : x ∈ B := xABC.right.left
+  have xC : x ∈ C := xABC.right.right
+  exact And.intro (And.intro xA xB) xC
+
+-- Lean will figure out a bunch of this stuff for you.
+theorem inter_assoc3 (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  exact And.intro xABC.left.left (And.intro xABC.left.right xABC.right)
+
+  intro xABC
+  exact And.intro (And.intro xABC.left xABC.right.left) xABC.right.right
