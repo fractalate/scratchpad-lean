@@ -518,3 +518,118 @@ theorem compl_union2 (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
   cases' xinAB with xA xB
   exact xABCompl.left xA
   exact xABCompl.right xB
+
+theorem compl_union3 (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  apply Iff.intro
+
+  intro xABCompl
+  have xABCompl : ¬(x ∈ A ∨ x ∈ B) := xABCompl
+  push_neg at xABCompl
+  exact xABCompl
+
+  intro xABCompl
+  by_contra xAB
+  rewrite [mem_compl_iff] at xAB
+  push_neg at xAB
+  cases' xAB with xA xB
+  exact xABCompl.left xA
+  exact xABCompl.right xB
+
+-- --------------------------------- --
+--   Combination World - Level 2     --
+-- --------------------------------- --
+theorem compl_inter (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rewrite [← compl_compl (Aᶜ ∪ Bᶜ)]
+  rewrite [compl_union]
+  -- Note: rw will not work in place of these in this context.
+  -- TODO: Compare why these can't be rw compared to inter_assoc2 where the rewrites can be rws.
+  rewrite [compl_compl A]
+  rewrite [compl_compl B]
+  rfl
+
+-- --------------------------------- --
+--   Combination World - Level 3     --
+-- --------------------------------- --
+theorem inter_distrib_left (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xAnBuC
+  have xA : x ∈ A := xAnBuC.left
+  have xBuC : x ∈ B ∨ x ∈ C := xAnBuC.right -- You can do this without this line
+  cases' xBuC with xB xC
+  exact Or.inl (And.intro xA xB)
+  exact Or.inr (And.intro xA xC)
+
+  intro xAnBuAnC
+  cases' xAnBuAnC with xAnB xAnC
+  exact And.intro xAnB.left (Or.inl xAnB.right)
+  exact And.intro xAnC.left (Or.inr xAnC.right)
+
+theorem inter_distrib_left2 (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  -- Shorter variation.
+  intro xAnBuC
+  have xA : x ∈ A := xAnBuC.left
+  cases' xAnBuC.right with xB xC
+  exact Or.inl (And.intro xA xB)
+  exact Or.inr (And.intro xA xC)
+
+  intro xAnBuAnC
+  cases' xAnBuAnC with xAnB xAnC
+  exact And.intro xAnB.left (Or.inl xAnB.right)
+  exact And.intro xAnC.left (Or.inr xAnC.right)
+
+-- --------------------------------- --
+--   Combination World - Level 4     --
+-- --------------------------------- --
+theorem union_distrib_left (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  cases' xABC with xA xBC
+  exact And.intro (Or.inl xA) (Or.inl xA)
+  exact And.intro (Or.inr xBC.left) (Or.inr xBC.right)
+
+  intro xABC
+  cases' xABC.left with xA xB
+  exact Or.inl xA
+  cases' xABC.right with xA xC
+  exact Or.inl xA
+  exact Or.inr (And.intro xB xC)
+
+-- This one uses inter_distrib, but I like it less.
+theorem union_distrib_left2 (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  cases' xABC with xA xBC
+  exact And.intro (Or.inl xA) (Or.inl xA)
+  exact And.intro (Or.inr xBC.left) (Or.inr xBC.right)
+
+  intro xABC
+  rewrite [inter_distrib_left (A ∪ B) A C] at xABC
+  cases' xABC with xAuBnA xAuBnC
+  exact Or.inl xAuBnA.right
+  have xC : x ∈ C := xAuBnC.right
+  cases' xAuBnC.left with xA xB
+  exact Or.inl xA
+  exact Or.inr (And.intro xB xC)
+
+-- --------------------------------- --
+--   Combination World - Level 5     --
+-- --------------------------------- --
+example (A B C : Set U) (h1 : A ∪ C ⊆ B ∪ C) (h2 : A ∩ C ⊆ B ∩ C) : A ⊆ B := by
+  intro x xA
+
+  have xAC : x ∈ A ∪ C := Or.inl xA
+  have xBC : x ∈ B ∪ C := h1 xAC
+  cases' xBC with xB xC
+  exact xB
+  have xBnC : x ∈ B ∩ C := h2 (And.intro xA xC)
+  exact xBnC.left
