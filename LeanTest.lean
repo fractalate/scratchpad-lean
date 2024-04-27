@@ -360,3 +360,161 @@ theorem inter_assoc3 (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
 
   intro xABC
   exact And.intro (And.intro xABC.left xABC.right.left) xABC.right.right
+
+-- --------------------------------- --
+--      Union World - Level 1        --
+-- --------------------------------- --
+example (x : U) (A B : Set U) (h : x ∈ A) : x ∈ A ∨ x ∈ B := by
+  exact Or.inl h
+
+-- Similarly
+example (x : U) (A B : Set U) (h : x ∈ A) : x ∈ A ∨ x ∈ B := by
+  have h2 : x ∈ A ∨ x ∈ B := Or.inl h
+  exact h2
+
+example (x : U) (A B : Set U) (h : x ∈ A) : x ∈ A ∨ x ∈ B := by
+  apply Or.inl
+  exact h
+
+-- --------------------------------- --
+--      Union World - Level 2        --
+-- --------------------------------- --
+example (A B : Set U) : B ⊆ A ∪ B := by
+  intro x xB
+  apply Or.inr
+  exact xB
+
+-- --------------------------------- --
+--      Union World - Level 3        --
+-- --------------------------------- --
+example (A B C : Set U) (h1 : A ⊆ C) (h2 : B ⊆ C) : A ∪ B ⊆ C := by
+  intro x xAB
+  have xAB : x ∈ A ∨ x ∈ B := xAB
+  cases' xAB with xA xB
+  exact h1 xA
+  exact h2 xB
+
+-- --------------------------------- --
+--      Union World - Level 4        --
+-- --------------------------------- --
+theorem union_subset_swap (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  intro x xAB
+  -- Here's the rewrite as opposed to the have from level 3.
+  rewrite [Set.mem_union x A B] at xAB
+  cases' xAB with xA xB
+  exact Or.inr xA
+  exact Or.inl xB
+
+-- --------------------------------- --
+--      Union World - Level 5        --
+-- --------------------------------- --
+theorem union_comm (A B : Set U) : A ∪ B = B ∪ A := by
+  apply Set.Subset.antisymm
+  exact union_subset_swap A B
+  exact union_subset_swap B A
+
+-- --------------------------------- --
+--      Union World - Level 6        --
+-- --------------------------------- --
+theorem union_assoc (A B C : Set U) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
+  apply Set.Subset.antisymm
+
+  intro x xABC
+  have xABC : (x ∈ A ∨ x ∈ B) ∨ x ∈ C := xABC
+  cases' xABC with xAB xC
+  cases' xAB with xA xB
+  exact Or.inl xA
+  exact Or.inr (Or.inl xB)
+  exact Or.inr (Or.inr xC)
+
+  intro x xABC
+  have xABC : x ∈ A ∨ (x ∈ B ∨ x ∈ C) := xABC
+  cases' xABC with xA xBC
+  exact Or.inl (Or.inl xA)
+  cases' xBC with xB xC
+  exact Or.inl (Or.inr xB)
+  exact Or.inr xC
+
+theorem union_assoc2 (A B C : Set U) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
+  ext x
+  apply Iff.intro
+
+  intro xABC
+  rewrite [Set.mem_union]
+  rewrite [Set.mem_union]
+  rewrite [Set.mem_union] at xABC
+  rewrite [Set.mem_union] at xABC
+  cases' xABC with xAB xC
+  cases' xAB with xA xB
+  exact Or.inl xA
+  exact Or.inr (Or.inl xB)
+  exact Or.inr (Or.inr xC)
+
+  intro xABC
+  rewrite [Set.mem_union]
+  rewrite [Set.mem_union]
+  rewrite [Set.mem_union] at xABC
+  rewrite [Set.mem_union] at xABC
+  cases' xABC with xA xBC
+  exact Or.inl (Or.inl xA)
+  cases' xBC with xB xC
+  exact Or.inl (Or.inr xB)
+  exact Or.inr xC
+
+theorem union_assoc3 (A B C : Set U) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
+  ext x
+  apply Iff.intro
+
+  -- And you can do it just like union_assoc2 without the rewrites.
+  intro xABC
+  cases' xABC with xAB xC
+  cases' xAB with xA xB
+  exact Or.inl xA
+  exact Or.inr (Or.inl xB)
+  exact Or.inr (Or.inr xC)
+
+  intro xABC
+  cases' xABC with xA xBC
+  exact Or.inl (Or.inl xA)
+  cases' xBC with xB xC
+  exact Or.inl (Or.inr xB)
+  exact Or.inr xC
+
+-- --------------------------------- --
+--   Combination World - Level 1     --
+-- --------------------------------- --
+theorem compl_union (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  apply Iff.intro
+
+  intro xABCompl
+  have xABCompl : ¬(x ∈ A ∨ x ∈ B) := xABCompl
+  push_neg at xABCompl
+  have xniA : x ∉ A := xABCompl.left
+  have xniB : x ∉ B := xABCompl.right
+  exact And.intro xniA xniB
+
+  intro xABCompl
+  have xABCompl : x ∉ A ∧ x ∉ B := xABCompl
+  rewrite [mem_compl_iff]
+  by_contra xinAB
+  cases' xinAB with xA xB
+  exact xABCompl.left xA
+  exact xABCompl.right xB
+
+-- A little shorter
+theorem compl_union2 (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  apply Iff.intro
+
+  intro xABCompl
+  have xABCompl : ¬(x ∈ A ∨ x ∈ B) := xABCompl
+  push_neg at xABCompl
+  exact And.intro xABCompl.left xABCompl.right
+
+  intro xABCompl
+  rewrite [mem_compl_iff]
+  by_contra xinAB
+  cases' xinAB with xA xB
+  exact xABCompl.left xA
+  exact xABCompl.right xB
