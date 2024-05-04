@@ -71,3 +71,72 @@ example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
   by_contra xA
   apply h1 at xA -- In this one I reused xA to mean x ∈ B, but I don't prefer it.
   exact xB xA
+
+-- Practice Session - May 4, 2024
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  intro x xB
+  rw [Set.mem_compl_iff] at xB
+  rw [Set.mem_compl_iff]
+  by_contra xA
+  have oops := h1 xA
+  exact xB oops
+
+example (A : Set U) : Aᶜᶜ = A := by
+  apply Set.Subset.antisymm
+
+  intro x xA
+  rw [Set.mem_compl_iff] at xA
+  rw [Set.mem_compl_iff] at xA
+  push_neg at xA
+  exact xA
+
+  intro x xA
+  rw [Set.mem_compl_iff]
+  rw [Set.mem_compl_iff]
+  push_neg
+  exact xA
+
+example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
+  apply Iff.intro
+
+  intro ASubsetB
+  intro x xBCompl
+  by_contra xA
+  rewrite [Set.mem_compl_iff] at xA
+  push_neg at xA
+  exact xBCompl (ASubsetB xA)
+
+  intro BCSubsetAC
+  intro x xA
+  by_contra xBCompl
+  apply BCSubsetAC at xBCompl
+  exact xBCompl xA
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  intro x xBCompl
+  by_contra xA
+  rewrite [Set.mem_compl_iff] at xA
+  push_neg at xA
+  have xB := h1 xA
+  exact xBCompl xB
+
+example (x : U) (A B : Set U) (h : x ∈ A ∧ x ∈ B) : x ∈ A := by
+  exact h.left
+
+example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
+  apply Iff.intro
+
+  intro ASubsetB
+  intro x xBCompl
+  by_contra xA
+  rewrite [Set.mem_compl_iff] at xA
+  push_neg at xA
+  have xB := ASubsetB xA
+  exact xBCompl xB
+
+  intro BComplSubsetACompl
+  intro x xA
+  by_contra xBCompl
+  have h2 : x ∉ A := BComplSubsetACompl xBCompl
+  exact h2 xA
