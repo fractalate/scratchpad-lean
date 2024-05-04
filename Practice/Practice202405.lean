@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Subset
 
@@ -39,3 +40,34 @@ example {A B : Set U} {x : U} (h1 : x ∈ A) (h2 : x ∉ B) : ¬A ⊆ B := by
 
 example (A : Set U) (x : U) : x ∈ Aᶜ ↔ x ∉ A := by
   rfl
+
+-- Practice Session - May 3, 2024
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  intro x xB
+  --rw [Set.mem_compl_iff] at xB
+  rw [Set.mem_compl_iff]
+  by_contra xA
+  have oops := h1 xA
+  exact xB oops
+
+example (A : Set U) : Aᶜᶜ = A := by
+  apply Set.Subset.antisymm
+  intro x xA
+  rw[Set.mem_compl_iff] at xA
+  rw[Set.mem_compl_iff] at xA
+  push_neg at xA
+  exact xA
+  intro x xA
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  push_neg
+  exact xA
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  intro x xB
+  rewrite [Set.mem_compl_iff] at xB
+  rewrite [Set.mem_compl_iff]
+  by_contra xA
+  apply h1 at xA -- In this one I reused xA to mean x ∈ B, but I don't prefer it.
+  exact xB xA
