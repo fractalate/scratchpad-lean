@@ -140,3 +140,36 @@ example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
   by_contra xBCompl
   have h2 : x ∉ A := BComplSubsetACompl xBCompl
   exact h2 xA
+
+-- Practice Session - May 5, 2024
+
+example (x : U) (A : Set U) (h : x ∈ A) : x ∈ A := by
+  exact h
+
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  exact h.right
+
+example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
+  apply Iff.intro
+  intro xAB
+  intro x xBCompl
+  rewrite [Set.mem_compl_iff]
+  by_contra xA
+  exact xBCompl (xAB xA)
+
+  intro xAB
+  intro x xA
+  by_contra xBC
+  rewrite [← Set.mem_compl_iff] at xBC
+  have xAC := xAB xBC
+  exact xAC xA
+
+example (A B : Set U) : A ∩ B ⊆ A := by
+  intro x xAB
+  exact xAB.left
+
+example {x : U} {A B C : Set U} (h1 : A ⊆ B) (h2 : x ∈ B → x ∈ C) : x ∈ A → x ∈ C := by
+  intro xA
+  have xB := h1 xA
+  have xC := h2 xB
+  exact xC
