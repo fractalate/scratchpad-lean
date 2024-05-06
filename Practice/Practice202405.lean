@@ -173,3 +173,36 @@ example {x : U} {A B C : Set U} (h1 : A ⊆ B) (h2 : x ∈ B → x ∈ C) : x �
   have xB := h1 xA
   have xC := h2 xB
   exact xC
+
+-- Practice Session - May 6, 2024
+
+example (x : U) (A B : Set U) (h1 : x ∈ A) (h2 : x ∈ B) : x ∈ A ∩ B := by
+  exact And.intro h1 h2
+
+example (x : U) (A B C : Set U) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : x ∈ A) : x ∈ C := by
+  have h4 := h1 h3
+  apply h2 at h4
+  exact h4
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x xA
+  have h3 := h1 xA
+  have h4 := h2 xA
+  exact And.intro h3 h4
+
+example {A B : Set U} {x : U} (h1 : x ∈ A) (h2 : x ∉ B) : ¬A ⊆ B := by
+  by_contra ASubB
+  have oops := ASubB h1
+  exact h2 oops
+
+example {A B : Set U} {x : U} (h1 : x ∈ A) (h2 : x ∉ B) : ¬A ⊆ B := by
+  by_contra ASubB
+  have oops := ASubB h1
+  exact h2 oops
+
+example (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+  intro x xAB
+  exact And.intro xAB.right xAB.left
+
+example (A B C : Prop) : ¬((¬B ∨ ¬ C) ∨ (A → B)) → (¬A ∨ B) ∧ ¬ (B ∧ C) := by
+  tauto
