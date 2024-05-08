@@ -2,6 +2,9 @@ import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Subset
 
+open Finset
+open BigOperators
+
 -- Practice Session - May 2, 2024
 
 example (x : U) (A : Set U) (h : x ∈ A) : x ∈ A := by
@@ -396,3 +399,159 @@ example (n : ℕ) (h : n = 10) (g : n ≠ 10) : n = 42 := by
 example (n : ℕ) (h : n ≠ n) : n = 37 := by
   by_contra
   exact h rfl
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  rw[sum_add_distrib]
+  simp
+  ring
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x xGG
+  rw[Set.mem_sInter] at xGG
+  rw[Set.mem_sInter]
+  intro t
+  intro tt
+  apply h1 at tt
+  apply xGG at tt
+  assumption
+
+-- Practice Session - May 8, 2024
+
+
+example (A B : Prop) (h : A ↔ B) : B ↔ A := by
+  symm
+  assumption
+
+example (n : ℕ) (h : n ≠ n) : n = 37 := by
+  trivial
+
+example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
+  symm at h₂
+  symm at h₁
+  rw[h₂]
+  rw[h₃]
+  rw[h₁]
+
+example (n : ℕ) (h : n = 10) (g : n ≠ 10) : n = 42 := by
+  by_contra
+  exact g h
+
+example (A B C : Prop) (h : A ↔ B) (g : B → C) : A → C := by
+  rw[h]
+  assumption
+
+example (A : Set U) : Aᶜᶜ = A := by
+  apply Set.Subset.antisymm
+  intro x xACC
+  rw[Set.mem_compl_iff] at xACC
+  rw[Set.mem_compl_iff] at xACC
+  push_neg at xACC
+  assumption
+  intro x xACC
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  push_neg
+  assumption
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro aiffb h
+  rw[aiffb] at h
+  assumption
+
+example (A B : Prop) (h : A ↔ B) : B ↔ A := by
+  symm
+  assumption
+
+example (A : Prop) (h : False) : A := by
+  trivial
+
+example (A : Prop) : ¬A ∨ A := by
+  by_cases a : A
+  exact Or.inr a
+  exact Or.inl a
+
+example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
+  rw[← h₂]
+  rw[h₃]
+  rw[← h₁]
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  intro x xBCompl
+  by_contra xA
+  rw[Set.mem_compl_iff] at xA
+  push_neg at xA
+  apply h1 at xA
+  contradiction
+
+example (A B C : Prop) (h : A ↔ B) (g : B → C) : A → C := by
+  rw[h]
+  assumption
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro ab a
+  rw[ab] at a
+  assumption
+
+example (A B : Set U) : B ⊆ A ∪ B := by
+  intro x xB
+  exact Or.inr xB
+
+example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
+  apply Iff.intro
+  intro h x xBCompl
+  by_contra xA
+  rw[Set.mem_compl_iff] at xA
+  push_neg at xA
+  apply h at xA
+  contradiction
+  intro h x xA
+  by_contra xBCompl
+  rw[← Set.mem_compl_iff] at xBCompl
+  apply h at xBCompl
+  contradiction
+
+example (A B C : Set U) (h1 : A ⊆ C) (h2 : B ⊆ C) : A ∪ B ⊆ C := by
+  intro x xAuB
+  rcases xAuB with xA | xB
+  apply h1 at xA
+  assumption
+  apply h2 at xB
+  assumption
+
+example (A : Prop) : ¬A ∨ A := by
+  by_cases a : A
+  exact Or.inr a
+  exact Or.inl a
+
+example (x : U) (A B : Set U) (h : x ∈ A ∧ x ∈ B) : x ∈ A := by
+  exact h.left
+
+example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  intro x xAuB
+  rcases xAuB with xA | xB
+  exact Or.inr xA
+  exact Or.inl xB
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro ab
+  intro a
+  rw[ab] at a
+  assumption
+
+example (A B : Set U) : B ⊆ A ∪ B := by
+  intro x xB
+  exact Or.inr xB
+
+example (A B C : Set U) (h1 : A ⊆ C) (h2 : B ⊆ C) : A ∪ B ⊆ C := by
+  intro x xAuB
+  rcases xAuB with xA | xB
+  apply h1 at xA
+  assumption
+  apply h2 at xB
+  assumption
+
+example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  intro x xAuB
+  rcases xAuB with xA | xB
+  exact Or.inr xA
+  exact Or.inl xB
