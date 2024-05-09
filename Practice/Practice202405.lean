@@ -555,3 +555,192 @@ example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
   rcases xAuB with xA | xB
   exact Or.inr xA
   exact Or.inl xB
+
+-- Practice Session - May 9, 2023
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x xA
+  exact And.intro (h1 xA) (h2 xA)
+
+example (A B C : Prop) : (A ∧ (¬¬C)) ∨ (¬¬B) ∧ C ↔ (A ∧ C) ∨ B ∧ (¬¬C) := by
+  tauto
+
+example (A B : Set U) : A ∩ B ⊆ A := by
+  intro x xAB
+  exact xAB.left
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  tauto -- Nice! But let's do it for real this time.
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+  intro hatob
+  by_cases a : A
+  apply hatob at a
+  exact Or.inr a
+  exact Or.inl a
+  intro notaorb
+  intro a
+  rcases notaorb with nota | b
+  contradiction
+  assumption
+
+example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  intro x xAB
+  rcases xAB with xA | xB
+  exact Or.inr xA
+  exact Or.inl xB
+
+example (x y : ℕ) : (x + y) ^ 2 = x ^ 2 + 2 * x * y + y ^ 2 := by
+  ring
+
+example (A B C : Prop) (h : A ↔ B) (g : B → C) : A → C := by
+  rw[h]
+  apply g
+
+example (a b c d : ℕ) (h₁ : c = d) (h₂ : a = b) (h₃ : a = d) : b = c := by
+  rw[← h₂]
+  rw[h₃]
+  rw[← h₁]
+
+example (A : Prop) : ¬A ∨ A := by
+  by_cases a : A
+  exact Or.inr a
+  exact Or.inl a
+
+example (a b : ℕ) (h : a = b) (g : a + a ^ 2 = b + 1) : b + b ^ 2 = b + 1 := by
+  rw[h] at g
+  assumption
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro aiffb
+  rw[aiffb]
+  intro b
+  assumption
+
+example (A B : Set U) : A ∪ B = B ∪ A := by
+  rw[Set.union_comm] -- This is the theorem that is being proved here
+
+example (A B : Set U) : A ∪ B = B ∪ A := by
+  apply Set.Subset.antisymm
+  intro x xAuB
+  rcases xAuB with xA | xB
+  exact Or.inr xA
+  exact Or.inl xB
+  intro x xBuA
+  rcases xBuA with xB | xA
+  exact Or.inr xB
+  exact Or.inl xA
+
+example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
+  rw[← h₂]
+  rw[h₃]
+  rw[← h₁]
+
+example (A B C : Set U) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
+  apply Set.Subset.antisymm
+
+  intro x xAuBuC
+  rcases xAuBuC with xAuB | xC
+  rcases xAuB with xA | xB
+  exact Or.inl xA
+  exact Or.inr (Or.inl xB)
+  exact Or.inr (Or.inr xC)
+
+  intro x xAuBuC
+  rcases xAuBuC with xA | xBuC
+  exact Or.inl (Or.inl xA)
+  rcases xBuC with xB | xC
+  exact Or.inl (Or.inr xB)
+  exact Or.inr xC
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+  intro AtoB
+  by_cases a : A
+  apply AtoB at a
+  exact Or.inr a
+  exact Or.inl a
+  intro nAorB
+  intro a
+  rcases nAorB
+  contradiction
+  assumption
+
+example (a b : ℕ) (h : a = b) (g : a + a ^ 2 = b + 1) : b + b ^ 2 = b + 1 := by
+  rw[h] at g
+  assumption
+
+example (A B C : Set U) (h1 : A ⊆ C) (h2 : B ⊆ C) : A ∪ B ⊆ C := by
+  intro x xAuB
+  rcases xAuB with xA | xB
+  apply h1 at xA
+  assumption
+  apply h2 at xB
+  assumption
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  rewrite [Set.compl_union]
+  rfl
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  rewrite [← Set.compl_union]
+  rfl
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_union]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  apply Iff.intro
+  intro h
+  push_neg at h
+  assumption
+  intro h
+  push_neg
+  assumption
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_union]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  apply Iff.intro
+  intro h
+  push_neg at h
+  exact h
+  intro h
+  push_neg
+  exact h
+
+example (A B : Prop) (h : A ↔ B) : B ↔ A := by
+  rw[h]
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  -- ext x is a better opener for this kind of proof.
+  -- This apply splits the goal before x is introduced.
+  -- Since the mem_* theorems require x, I have to do the
+  -- rewrites for each sub-goal, which is more work.
+  apply Set.Subset.antisymm
+  intro x
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_union]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  intro h
+  push_neg at h
+  assumption
+  intro x
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_union]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_compl_iff]
+  intro h
+  push_neg
+  assumption
