@@ -15,3 +15,5 @@ require mathlib from git
 @[default_target]
 lean_lib «LeanTest» where
   -- add any library configuration options here
+
+lean_lib «LeanBook» where
