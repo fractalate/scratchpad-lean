@@ -744,3 +744,223 @@ example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
   intro h
   push_neg
   assumption
+
+-- Practice Session - May 10, 2024
+
+example : True := by
+  trivial
+
+example (x y z : ℕ) (h : x = 2 * y + 1) (g : z = 3 * y + 1): x ^ 2 = 4 * y ^ 2 + z + y := by
+  rw[h]
+  rw[g]
+  ring
+
+example (n : ℕ) (h₁ : 10 > n) (h₂ : 1 < n) (h₃ : n ≠ 5) : 1 < n := by
+  assumption
+
+example (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  apply Iff.intro
+  intro abc
+  exact And.intro abc.left.left (And.intro abc.left.right abc.right)
+  intro abc
+  exact And.intro (And.intro abc.left abc.right.left) abc.right.right
+
+example : 1 + 1 = 2 := by
+  ring
+
+example : ¬False := by
+  trivial
+
+example (A B : Prop) (h : (A ∧ B) ∨ A) : A := by
+  tauto
+
+example (A B : Prop) (h : (A ∧ B) ∨ A) : A := by
+  rcases h with ⟨xA1, xb⟩ | xA
+  assumption
+  assumption
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  unfold Even
+  unfold Even at h
+  rcases h with ⟨r, hr⟩
+  rw[hr]
+  use 2 * r^2
+  ring
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  tauto
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+  intro atob
+  by_cases a : A
+  apply atob at a
+  exact Or.inr a
+  exact Or.inl a
+  intro naorb
+  intro a
+  rcases naorb with na | b
+  contradiction
+  assumption
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  revert h
+  unfold Odd
+  intro h
+  rcases h with ⟨r, hr⟩
+  use 2*r^2 + 2*r
+  rw[hr]
+  ring
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  revert h
+  unfold Even
+  intro h
+  rcases h with ⟨r, hr⟩
+  use 2 * r^2
+  rw[hr]
+  ring
+
+example (x : U) (A B : Set U) (h : x ∈ A) : x ∈ A ∨ x ∈ B := by
+  exact Or.inl h
+
+example (x : U) (A B : Set U) (h1 : x ∈ A) (h2 : x ∈ B) : x ∈ A ∩ B := by
+  exact And.intro h1 h2
+
+example : ∀ (x : ℕ), (Even x) → Odd (1 + x) := by
+  intro x
+  unfold Even
+  unfold Odd
+  intro xeven
+  rcases xeven with ⟨r, hr⟩
+  use r
+  rw[hr]
+  ring
+
+example (A B : Prop) (hA : A) : A ∨ (¬ B) := by
+  tauto
+
+example (A B : Prop) (hA : A) : A ∨ (¬ B) := by
+  exact Or.inl hA
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  rw[Set.compl_union]
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  rw[Set.mem_compl_iff]
+  apply Iff.intro
+  intro hx
+  rw[Set.mem_union] at hx
+  push_neg at hx
+  assumption
+  intro hx
+  rw[Set.mem_union]
+  push_neg
+  assumption
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  unfold Odd
+  unfold Odd at h
+  rcases h with ⟨r, hr⟩
+  use 2*r^2 + 2*r
+  rw[hr]
+  ring
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  unfold Even
+  unfold Even at h
+  rcases h with ⟨r, hr⟩
+  use 2*r^2
+  rw[hr]
+  ring
+
+example : ∀ (x : ℕ), (Even x) → Odd (1 + x) := by
+  unfold Even
+  unfold Odd
+  intro n h
+  rcases h with ⟨r, hr⟩
+  use r
+  rw[hr]
+  ring
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[Set.compl_inter]
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  unfold Odd at h
+  unfold Odd
+  rcases h with ⟨r, hr⟩
+  use 2*r^2 + 2*r
+  rw[hr]
+  ring
+
+example (A B : Prop) (mp : A → B) (mpr : B → A) : A ↔ B := by
+  tauto
+
+example (A B : Prop) (mp : A → B) (mpr : B → A) : A ↔ B := by
+  apply Iff.intro
+  assumption
+  assumption
+
+example (A B : Prop) (mp : A → B) (mpr : B → A) : A ↔ B := by
+  constructor
+  assumption
+  assumption
+
+example (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+  intro xabc
+  rcases xabc with ⟨xa, xbc⟩
+  rcases xbc with xb | xc
+  exact Or.inl (And.intro xa xb)
+  exact Or.inr (And.intro xa xc)
+  intro xabc
+  rcases xabc with xab | xac
+  exact And.intro xab.left (Or.inl xab.right)
+  exact And.intro xac.left (Or.inr xac.right)
+
+example (A B C : Prop) (h : A ∨ (B ∧ C)) : (A ∨ B) ∧ (A ∨ C) := by
+  tauto
+
+example (A B C D E F G H I : Prop) (f : A → B) (g : C → B) (h : A → D) (i : B → E) (j : C → F) (k : E → D) (l : E → F) (m : G → D) (n : H → E) (p : F → I) (q : H → G) (r : H → I) : A → I := by
+  intro a
+  apply f at a
+  apply i at a
+  apply l at a
+  apply p at a
+  assumption
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  ext x
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  ext x
+  apply Iff.intro
+  intro xabc
+  rcases xabc with xa | xbc
+  exact And.intro (Or.inl xa) (Or.inl xa)
+  rcases xbc with ⟨xb, xc⟩
+  exact And.intro (Or.inr xb) (Or.inr xc)
+  intro xabc
+  rcases xabc with ⟨xab, xac⟩
+  rcases xab with xa | xb
+  exact Or.inl xa
+  rcases xac with xa | xc
+  exact Or.inl xa
+  exact Or.inr (And.intro xb xc)
+
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  exact h.right
