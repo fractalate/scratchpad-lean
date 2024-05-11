@@ -964,3 +964,313 @@ example (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
 
 example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
   exact h.right
+
+-- Practice Session - May 11, 2024
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  unfold Odd
+  unfold Odd at h
+  rcases h with ⟨k, hk⟩
+  use 2*k^2 + 2*k
+  rw[hk]
+  ring
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  tauto
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  push_neg
+  rfl
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  apply Iff.intro
+  contrapose
+  intro x
+  -- rw[Classical.not_forall] at x
+  push_neg at x
+  push_neg
+  assumption
+  contrapose
+  intro x
+  --rw[Classical.not_forall]
+  push_neg at x
+  push_neg
+  assumption
+
+example (A B : Prop) (hA : A) (hB : B) : A ∧ B := by
+  exact And.intro hA hB
+
+example : ¬ ∃ (n : ℕ), ∀ (k : ℕ) , Odd (n + k) := by
+  push_neg
+  intro n
+  use n
+  rw[Nat.odd_iff_not_even]
+  unfold Even
+  push_neg
+  use n
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  ext x
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  assumption
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro hy
+  contradiction
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  exact h
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro oops
+  contradiction
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  push_neg
+  rfl
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  apply Iff.intro
+  contrapose
+  intro h
+  rw[Classical.not_forall] at h
+  push_neg at h
+  push_neg
+  assumption
+  contrapose
+  intro h
+  push_neg at h
+  rw[Classical.not_forall]
+  push_neg
+  assumption
+
+example : ¬ ∃ (n : ℕ), ∀ (k : ℕ) , Odd (n + k) := by
+  push_neg
+  intro n
+  use n
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  use n
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  ext x
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  assumption
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro oops
+  contradiction
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  unfold Even
+  unfold Even at h
+  rcases h with ⟨r, hr⟩
+  rw[hr]
+  use 2*r^2
+  ring
+
+example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
+  rfl
+
+example (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  ext x
+  rw[Set.inter_union_distrib_left]
+  rw[Set.union_inter_distrib_left]
+  rw[Set.union_inter_distrib_left]
+  rw[Set.inter_union_distrib_left]
+  rw[Set.union_inter_distrib_left]
+
+example (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  ext x
+  apply Iff.intro
+  intro xabc
+  rcases xabc with xa | xbc
+  exact And.intro (Or.inl xa) (Or.inl xa)
+  exact And.intro (Or.inr xbc.left) (Or.inr xbc.right)
+  intro xabac
+  rcases xabac with ⟨xab, xac⟩
+  rcases xab with xa | xb
+  exact Or.inl xa
+  rcases xac with xa | xc
+  exact Or.inl xa
+  exact Or.inr (And.intro xb xc)
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  apply Iff.intro
+  intro h
+  push_neg at h
+  assumption
+  intro h
+  push_neg
+  assumption
+
+example : ¬ ∃ (n : ℕ), ∀ (k : ℕ) , Odd (n + k) := by
+  push_neg
+  intro n
+  use n
+  rw[Nat.odd_iff_not_even]
+  push_neg
+  unfold Even
+  use n
+
+theorem compl_inter (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  ext x
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  assumption
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro
+  contradiction
+
+example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
+  rfl
+
+example (A B : Prop) (hA : A) (h : A → B) : B := by
+  apply h at hA
+  assumption
+
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  rcases n
+  simp
+  simp
+
+example (A B : Prop) (hB : B) : A → (A ∧ B) := by
+  intro hA
+  exact And.intro hA hB
+
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  rcases n
+  simp
+  simp
+
+example : ∀ (x : ℕ), (Even x) → Odd (1 + x) := by
+  intro x xeven
+  rcases xeven with ⟨r, hr⟩
+  use r
+  rw[hr]
+  ring
+
+example (A B C : Set U) (h1 : A ∪ C ⊆ B ∪ C) (h2 : A ∩ C ⊆ B ∩ C) : A ⊆ B := by
+  intro x xA
+  have h3 := h1 (Or.inl xA)
+  rcases h3 with xB | xC
+  assumption
+  have h4 := h2 (And.intro xA xC)
+  exact h4.left
+
+example (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  rw[Set.inter_union_distrib_left]
+
+example (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+  intro xabc
+  rcases xabc with ⟨xa, xbc⟩
+  rcases xbc with xb | xc
+  exact Or.inl (And.intro xa xb)
+  exact Or.inr (And.intro xa xc)
+  intro xabac
+  rcases xabac with xab | xac
+  exact And.intro xab.left (Or.inl xab.right)
+  exact And.intro xac.left (Or.inr xac.right)
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x xfff
+  exact (xfff A) h1
+
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  rcases n
+  simp
+  simp
+
+example (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+  intro x xab
+  exact And.intro xab.right xab.left
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro hg
+  intro h3 f
+  apply h1 at f
+  have h4 := hg h3
+  apply h4 at f
+  assumption
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro hG
+  intro t tF
+  have ting_xint := hG t
+  have tG := h1 tF
+  have xt := ting_xint tG
+  assumption
+
+example (A B C : Set U) (h1 : A ∪ C ⊆ B ∪ C) (h2 : A ∩ C ⊆ B ∩ C) : A ⊆ B := by
+  intro x xA
+  have xBuC := h1 (Or.inl xA)
+  rcases xBuC with xB | xC
+  assumption
+  have xBnC := h2 (And.intro xA xC)
+  exact xBnC.left
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x
+  rw[Set.mem_sInter]
+  intro xfff
+  have h2 := xfff A
+  apply h2 at h1
+  assumption
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro hG
+  intro t tF
+  -- I find this pretty confusing, but I'm able to work through it now.
+  have tG := h1 tF
+  have xt := hG t
+  exact xt tG
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x
+  rw[Set.mem_sInter]
+  intro xF
+  have h2 := xF A
+  apply h2 at h1
+  assumption
