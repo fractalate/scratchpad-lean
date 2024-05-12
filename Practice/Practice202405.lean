@@ -1274,3 +1274,402 @@ example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
   have h2 := xF A
   apply h2 at h1
   assumption
+
+-- Practice Session - May 12, 2024
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∪ Bᶜ)]
+  rw[Set.compl_union]
+  rw[compl_compl]
+  rw[compl_compl]
+
+example (n : ℕ) (h : n = 10) (g : n ≠ 10) : n = 42 := by
+  contradiction
+
+example (n : ℕ) (h : 2 ≤ n) : n ≠ 0 := by
+  linarith
+
+example (A B C : Prop) (f : A → B) (g : B → C) : A → C := by
+  intro h
+  apply f at h
+  apply g at h
+  assumption
+
+example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
+  rfl
+
+example (x y : ℤ) (h₂ : 5 * y ≤ 35 - 2 * x) (h₃ : 2 * y ≤ x + 3) : y ≤ 5 := by
+  --        5 * y ≤ 35 - 2 * x
+  -- +2 * ( 2 * y ≤  3       x )
+  -- ===========================
+  --        9 * y ≤ 41
+  --        9 * y ≤ 41/9 ≤ 5  ✓
+  linarith
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro forallg
+  intro t
+  intro tin
+  apply h1 at tin
+  apply forallg at tin
+  assumption
+
+example (n : ℕ) (h : 2 ≤ n) : n ≠ 0 := by
+  linarith
+
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  apply Iff.intro
+  intro h
+  linarith
+  intro h
+  by_contra h2
+  push_neg at h2
+  rcases h2 with h3 | h4 -- not sure why this works, h3 and h4 don't show up as assumptions.
+  contradiction
+
+-- from the game.
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  rcases n
+  simp
+  constructor
+  intro
+  simp
+  intro
+  apply Nat.succ_pos
+
+example (x y : ℤ) (h₂ : 5 * y ≤ 35 - 2 * x) (h₃ : 2 * y ≤ x + 3) : y ≤ 5 := by
+  linarith
+
+example {x : U} {A B C : Set U} (h1 : A ⊆ B) (h2 : x ∈ B → x ∈ C) : x ∈ A → x ∈ C := by
+  intro hx
+  apply h1 at hx
+  apply h2 at hx
+  assumption
+
+example (A B : Prop) (h : A → ¬ B) (k : A ∧ B) : False := by
+  tauto
+
+example (A B : Prop) (h : A → ¬ B) (k : A ∧ B) : False := by
+  rcases k with ⟨ha, hb⟩
+  apply h at ha
+  contradiction
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  push_neg
+  rfl
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x
+  intro xfff
+  rw[Set.mem_sInter] at xfff
+  apply xfff at h1
+  assumption
+
+example (A B : Prop) (h : A → ¬ B) (k₁ : A) (k₂ : B) : False := by
+  apply h at k₁
+  contradiction
+
+example (A : Prop) (hA : A) : A := by
+  trivial
+
+example : ¬ ∃ (n : ℕ), ∀ (k : ℕ) , Odd (n + k) := by
+  push_neg
+  intro n
+  use n
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  use n
+
+example : 42 = 42 := by
+  rfl
+
+example (A B : Prop) (g : A → B) (b : ¬ B) : ¬ A := by
+  by_contra a
+  apply g at a
+  contradiction
+
+example (A B : Set U) : A ∩ B = B ∩ A := by
+  ext x
+  apply Iff.intro
+  intro xab
+  exact And.intro xab.right xab.left
+  intro xba
+  exact And.intro xba.right xba.left
+
+example (A B C : Prop) (h : A ∧ (B ∧ C)) : B := by
+  tauto
+
+example (A B C : Prop) (h : A ∧ (B ∧ C)) : B := by
+  exact h.right.left
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  apply Iff.intro
+  intro xab
+  rw[Set.mem_sInter]
+  rcases xab with ⟨xa, xb⟩
+  intro t
+  intro tinset
+  rcases tinset with ta | tb
+  rw[← ta] at xa
+  assumption
+  rw[← tb] at xb
+  assumption
+
+  intro xpair
+  rw[Set.mem_sInter] at xpair
+
+  apply And.intro
+  apply xpair
+  exact Or.inl rfl
+
+  apply xpair
+  exact Or.inr rfl
+
+example (A B : Prop) (h : A → ¬ B) (k : A ∧ B) : False := by
+  have oops := h k.left
+  exact oops k.right
+
+example (A B C : Prop) : ¬((¬B ∨ ¬ C) ∨ (A → B)) → (¬A ∨ B) ∧ ¬ (B ∧ C) := by
+  tauto
+
+example (A B : Prop) (h : A) (hAB : A → B) : B := by
+  apply hAB
+  assumption
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  assumption
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro
+  contradiction
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  apply Iff.intro
+  intro xab
+  rw[Set.mem_sInter]
+  rcases xab with ⟨xa, xb⟩
+  intro t
+  intro tinset
+  rcases tinset with ta | tb
+  rw[← ta] at xa
+  assumption
+  rw[← tb] at xb
+  assumption
+
+  intro xpair
+  rw[Set.mem_sInter] at xpair
+
+  apply And.intro
+  apply xpair
+  exact Or.inl rfl
+
+  apply xpair
+  exact Or.inr rfl
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  apply Iff.intro
+  intro xab
+  rw[Set.mem_sInter]
+  intro t tinab
+  rcases tinab with ta | tb
+  rw[← ta] at xab
+  exact xab.left
+  rw[← tb] at xab
+  exact xab.right
+
+  rw[Set.mem_sInter]
+  intro xab
+  apply And.intro
+  apply xab
+  exact Or.inl rfl
+  apply xab
+  exact Or.inr rfl
+
+example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
+  ext x
+  rw[Set.mem_sInter]
+  apply Iff.intro
+  intro htfug
+  rw[Set.mem_inter_iff]
+  constructor
+  rw[Set.mem_sInter]
+  intro t
+  intro tf
+  have tf : t ∈ F ∪ G := Or.inl tf
+  apply htfug
+  assumption
+  intro t
+  intro tg
+  have tg : t ∈ F ∪ G := Or.inr tg
+  apply htfug
+  assumption
+
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro hxfg
+  rcases hxfg with ⟨htf, htg⟩
+  intro t tfg
+  rw[Set.mem_union] at tfg
+  rcases tfg with tf | tg
+  apply htf at tf
+  assumption
+  apply htg at tg
+  assumption
+
+example (n : ℕ) (h : n ≠ n) : n = 37 := by
+  tauto
+
+example (A B : Set U) : B ⊆ A ∪ B := by
+  intro x xB
+  exact Or.inr xB
+
+example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s := by
+  apply Iff.intro
+  intro h
+  intro S SF
+  intro x xA
+  apply h at xA
+  apply xA at SF
+  assumption
+
+  intro h
+  intro x xA
+  rw[Set.mem_sInter]
+  intro t tF
+  apply h at tF
+  apply tF at xA
+  assumption
+
+  -- This was tough!
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  apply Iff.intro
+  intro xab
+  rw[Set.mem_sInter]
+  intro t tab
+  rcases tab with ta | tb
+  rw[← ta] at xab
+  exact xab.left
+  rw[← tb] at xab
+  exact xab.right
+
+  rw[Set.mem_sInter]
+  intro xab
+  constructor
+  apply xab
+  apply Or.inl
+  trivial
+  apply xab
+  apply Or.inr
+  trivial
+
+example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
+  ext x
+  rw[Set.mem_sInter]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+
+  apply Iff.intro
+  intro tfug
+  constructor
+  intro t tf
+  have h : t ∈ F ∪ G := Or.inl tf
+  apply tfug at h
+  assumption
+  intro t tg
+  have h : t ∈ F ∪ G := Or.inr tg
+  apply tfug at h
+  assumption
+
+  intro tftg
+  intro t tfug
+  rcases tfug with tf | tg
+  have h := tftg.left
+  apply h at tf
+  assumption
+  have h := tftg.right
+  apply h at tg
+  assumption
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  tauto
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro h
+  exact h.mp
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  apply Iff.intro
+  intro xaub
+  rw[Set.mem_compl_iff] at xaub
+  rw[Set.mem_union] at xaub
+  push_neg at xaub
+  assumption
+  intro xacbc
+  rw[Set.mem_inter_iff] at xacbc
+  rw[Set.mem_compl_iff] at xacbc
+  rw[Set.mem_compl_iff] at xacbc
+  by_contra h
+  push_neg at h
+  rw[Set.mem_compl_iff] at h
+  push_neg at h
+  rcases h with xa | xb
+  exact xacbc.left xa
+  exact xacbc.right xb
+
+example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s := by
+  apply Iff.intro
+  intro asubf
+  intro s sf
+  intro x xa
+  apply asubf at xa
+  apply xa at sf
+  assumption
+  intro sfas
+  intro x xa
+  rw[Set.mem_sInter]
+  intro t tf
+  apply sfas at tf
+  apply tf at xa
+  assumption
+
+example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
+  ext x
+  rw[Set.mem_sInter]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  apply Iff.intro
+
+  intro tfug
+  constructor
+  intro t tf
+  have h : t ∈ F ∪ G := Or.inl tf
+  apply tfug at h
+  assumption
+  intro t tg
+  have h : t ∈ F ∪ G := Or.inr tg
+  apply tfug at h
+  assumption
+
+  intro tftg
+  intro t tfug
+  rcases tfug with tf | tg
+  apply tftg.left at tf
+  assumption
+  apply tftg.right at tg
+  assumption
