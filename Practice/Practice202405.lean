@@ -1673,3 +1673,304 @@ example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
   assumption
   apply tftg.right at tg
   assumption
+
+-- Practice Session - May 13, 2024
+
+example (a b c d : ℕ) (h₁ : c = d) (h₂ : a = b) (h₃ : a = d) : b = c := by
+  rw[h₁]
+  rw[← h₃]
+  rw[h₂]
+
+example (A B : Prop) : A → B ↔ (¬ B → ¬ A) := by
+  apply Iff.intro
+  intro ab
+  intro notb
+  by_contra a
+  apply ab at a
+  contradiction
+
+  intro nanb
+  intro a
+  by_contra b
+  apply nanb at b
+  contradiction
+
+example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  intro x
+  intro aub
+  rcases aub with a | b
+  exact Or.inr a
+  exact Or.inl b
+
+example (n : ℕ) (h : Odd (n ^ 2)): Odd n := by
+  revert h
+  contrapose
+  rw[← Nat.even_iff_not_odd]
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  intro ne
+  rcases ne with ⟨r, rh⟩
+  use 2*r^2
+  rw[rh]
+  ring
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  unfold Odd
+  unfold Odd at h
+  rcases h with ⟨k, hk⟩
+  use 2*k^2 + 2*k
+  rw[hk]
+  ring
+
+example (A B C : Prop) : (A ∧ (¬¬C)) ∨ (¬¬B) ∧ C ↔ (A ∧ C) ∨ B ∧ (¬¬C) := by
+  tauto
+
+example (A B C : Prop) : (A ∧ (¬¬C)) ∨ (¬¬B) ∧ C ↔ (A ∧ C) ∨ B ∧ (¬¬C) := by
+  rw[not_not]
+  rw[not_not]
+
+example (n : ℕ) (h : Odd (n ^ 2)) : Odd n := by
+  by_contra hn
+  suffices d : ¬ Odd (n ^ 2)
+  contradiction
+  rw[← Nat.even_iff_not_odd] at hn
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  unfold Even at hn
+  -- It would be nice to do this:
+  -- apply even_square
+  -- but it's not in mathlib.
+  rcases hn with ⟨r, hr⟩
+  use 2*r^2
+  rw[hr]
+  ring
+
+example (n : ℕ) (h : Odd (n ^ 2)): Odd n := by
+  by_contra hn
+  suffices d : ¬ Odd (n ^ 2)
+  contradiction
+  rw[← Nat.even_iff_not_odd] at hn
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  unfold Even at hn
+  rcases hn with ⟨r, hr⟩
+  use 2 * r ^ 2
+  rw[hr]
+  ring
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+  intro ab
+  by_contra x
+  push_neg at x
+  exact x.right (ab x.left)
+
+  intro naorb
+  intro a
+  rcases naorb with na | b
+  contradiction
+  assumption
+
+example (n : ℕ) (h : Odd (n ^ 2)) : Odd n := by
+  by_contra hn
+  suffices d : ¬ Odd (n ^ 2)
+  contradiction
+  rw[← Nat.even_iff_not_odd] at hn
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  unfold Even at hn
+  rcases hn with ⟨r, hr⟩
+  use 2*r ^ 2
+  rw[hr]
+  ring
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+  intro ab
+  by_contra naorb
+  push_neg at naorb
+  rcases naorb with ⟨a, nb⟩
+  apply ab at a
+  contradiction
+  intro naorb
+  intro a
+  rcases naorb with na | b
+  contradiction
+  assumption
+
+example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
+  ext x
+  rw[Set.mem_sInter]
+  rw[Set.mem_inter_iff]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  apply Iff.intro
+
+  intro tfug
+  constructor
+  intro t tf
+  have tfg : t ∈ F ∪ G := Or.inl tf
+  apply tfug at tfg
+  assumption
+  intro t tg
+  have tfg : t ∈ F ∪ G := Or.inr tg
+  apply tfug at tfg
+  assumption
+
+  intro tftg
+  intro t tfug
+  rcases tftg with ⟨tf, tg⟩
+  rcases tfug with ttf | ttg
+  apply tf at ttf
+  assumption
+  apply tg at ttg
+  assumption
+
+example (n : ℕ) (h : Odd (n ^ 2)): Odd n := by
+  by_contra e
+  suffices d : ¬ Odd (n ^ 2)
+  contradiction
+  rw[← Nat.even_iff_not_odd] at e
+  rw[← Nat.even_iff_not_odd]
+  unfold Even at e
+  unfold Even
+  rcases e with ⟨r, hr⟩
+  use 2 * r ^ 2
+  rw[hr]
+  ring
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_union]
+  rw[Set.mem_sInter]
+  intro tg
+  by_cases hA : x ∈ A
+  exact Or.inl hA
+  suffices h : ∀ t ∈ F, x ∈ t
+  apply Or.inr
+  assumption
+  intro t tf
+  have autg := (h1 t) tf
+
+  have h6 : x ∈ A ∪ t := tg (A ∪ t) autg
+  rcases h6 with xa | xt
+  contradiction
+  assumption
+
+example (n : ℕ) (h : Odd (n ^ 2)) : Odd n := by
+  revert h
+  contrapose
+  rw[← Nat.even_iff_not_odd]
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  intro neven
+  rcases neven with ⟨r, hr⟩
+  use 2 * r ^ 2
+  rw[hr]
+  ring
+
+example (A : Prop) : ¬A ∨ A := by
+  by_cases h : A
+  exact Or.inr h
+  exact Or.inl h
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  rw[Set.mem_sInter]
+  apply Iff.intro
+
+  intro xab
+  intro t tab
+  rcases tab with ta | tb
+  rw[← ta] at xab
+  exact xab.left
+  rw[← tb] at xab
+  exact xab.right
+
+  intro xab
+  apply And.intro
+  apply xab
+  apply Or.inl
+  rfl
+  apply xab
+  apply Or.inr
+  rfl
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x
+  rw[Set.mem_sInter]
+  rw[Set.mem_union]
+  rw[Set.mem_sInter]
+
+  intro tg
+  by_cases ha : x ∈ A
+  exact Or.inl ha
+
+  suffices tfxt : ∀ t ∈ F, x ∈ t
+  exact Or.inr tfxt
+  intro t tf
+  apply h1 t at tf
+  apply tg at tf
+  rcases tf with xa | xt
+  contradiction
+  assumption
+
+example (A : Set U) : ∃ s, s ⊆ A := by
+  use A
+
+example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s := by
+  apply Iff.intro
+
+  intro aintf
+  rintro s sf
+  intro x xa
+  apply aintf at xa
+  rw[Set.mem_sInter] at xa
+  apply xa at sf
+  assumption
+
+  intro sfas
+  intro x xa
+  rw[Set.mem_sInter]
+  intro t tf
+  apply sfas at tf
+  apply tf at xa
+  assumption
+
+example (x y : ℤ) (h₂ : 5 * y ≤ 35 - 2 * x) (h₃ : 2 * y ≤ x + 3) : y ≤ 5 := by
+  linarith
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : A ⊆ ⋃₀ F := by
+  intro x xa
+  rw[Set.mem_sUnion]
+  use A
+
+example (A B : Prop) (h : A → ¬ B) (k : A ∧ B) : False := by
+  by_cases d : A
+  apply h at d
+  exact d k.right
+  exact d k.left
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x xgg
+  rw[Set.mem_union]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter] at xgg
+  by_cases xa : x ∈ A
+  exact Or.inl xa
+  apply Or.inr
+  intro t tf
+  apply h1 at tf
+  apply xgg at tf
+  rcases tf with xa | xt
+  contradiction
+  assumption
+
+example (A : Set U) : ∃ s, s ⊆ A := by
+  use A
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : A ⊆ ⋃₀ F := by
+  intro x xa
+  rw[Set.mem_sUnion]
+  use A
