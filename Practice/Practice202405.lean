@@ -1974,3 +1974,88 @@ example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : A ⊆ ⋃₀ F := by
   intro x xa
   rw[Set.mem_sUnion]
   use A
+
+-- Practice Session - May 14, 2024
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x xg
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter] at xg
+  intro t h2
+  apply h1 at h2
+  apply xg at h2
+  assumption
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : A ⊆ ⋃₀ F := by
+  intro x xa
+  use A
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x
+  rw[Set.mem_union]
+  rw[Set.mem_sInter]
+  rw[Set.mem_sInter]
+  intro tg
+  by_cases d : x ∈ A
+  exact Or.inl d
+  apply Or.inr
+  intro t tf
+  apply h1 at tf
+  apply tg at tf
+  rcases tf with xa | xt
+  contradiction
+  assumption
+
+example (n : ℕ) : (∑ i : Fin n, (0 + 0)) = 0 := by
+  induction n
+  simp
+  simp
+
+example (x : U) (A : Set U) (h : x ∈ A) : x ∈ A := by
+  assumption
+
+example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
+  apply Iff.intro
+  intro mn
+  assumption
+  intro mn
+  assumption
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h : ∀ (y : People), isDrinking y
+  use default
+  intro
+  assumption
+  push_neg at h
+  rcases h with ⟨y, hy⟩
+  use y
+  intro oops
+  contradiction
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  induction n
+  simp
+  rw[sum_add_distrib]
+  simp
+  ring
+
+example (x y : ℕ) : (x + y) ^ 2 = x ^ 2 + 2 * x * y + y ^ 2 := by
+  ring
+
+example (n : ℕ) : 0 < n ↔ n ≠ 0 := by
+  rcases n
+  trivial
+  --simp only [Nat.zero_lt_succ, ne_eq, Nat.succ_ne_zero, not_false_eq_true]
+  constructor
+  intro
+  simp
+  intro
+  simp
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  unfold Even at h
+  unfold Even
+  rcases h with ⟨r, hr⟩
+  use 2 * r^2
+  rw[hr]
+  ring
