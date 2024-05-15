@@ -2160,3 +2160,138 @@ example (n : ℕ) : (∑ i : Fin n, (0 + 0)) = 0 := by
   induction n
   simp
   simp
+
+-- Practce Session - May 15, 2024
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  induction n
+  simp
+  rw[sum_add_distrib]
+  simp
+  ring
+
+example (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n hn =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[mul_add]
+    rw[hn]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  rw [Finset.sum_add_distrib]
+  rw [Finset.sum_const]
+  rw [Finset.card_fin]
+  simp
+  ring
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n hn =>
+    rw [Fin.sum_univ_castSucc]
+    simp
+    rw [Fin.sum_univ_castSucc]
+    simp
+    rw [Nat.succ_eq_add_one]
+    rw [hn]
+    ring
+
+example (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[mul_add]
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (A : Prop) (h : False) : A := by
+  trivial
+
+example : ¬ ∃ (n : ℕ), ∀ (k : ℕ) , Odd (n + k) := by
+  push_neg
+  intro n
+  use n
+  rw[← Nat.even_iff_not_odd]
+  unfold Even
+  use n
+
+example (a b : ℕ) (h : a = b) (g : a + a ^ 2 = b + 1) : b + b ^ 2 = b + 1 := by
+  rw[← h]
+  ring
+  rw[g]
+  rw[← h]
+  ring
+
+example (a b : ℕ) (h : a = b) (g : a + a ^ 2 = b + 1) : b + b ^ 2 = b + 1 := by
+  rw[← h]
+  rw[g]
+  rw[← h]
+
+example (A B : Set U) : A ∪ B = B ∪ A := by
+  rw[Set.union_comm]
+
+example (A B C : Set U) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
+  rw[Set.union_assoc]
+
+example (x y z : ℕ) (h : x = 2 * y + 1) (g : z = 3 * y + 1): x ^ 2 = 4 * y ^ 2 + z + y := by
+  rw[h]
+  rw[g]
+  ring
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x xff
+  rw[Set.mem_sInter] at xff
+  apply xff at h1
+  assumption
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  rw[Set.compl_subset_compl]
+  assumption
+
+theorem inter_distrib_left (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+  intro xabuc
+  rcases xabuc with ⟨xa, xbuc⟩
+  rcases xbuc with xb | xc
+  exact Or.inl (And.intro xa xb)
+  exact Or.inr (And.intro xa xc)
+  intro xabac
+  rcases xabac with ⟨xa, xb⟩ | ⟨xa, xc⟩
+  exact And.intro xa (Or.inl xb)
+  exact And.intro xa (Or.inr xc)
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    rw[Fin.sum_univ_castSucc]
+    simp
+    ring
+
+example (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[mul_add]
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
