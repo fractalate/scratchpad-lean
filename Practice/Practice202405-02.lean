@@ -221,3 +221,145 @@ theorem compl_inter (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
   contrapose
   intro xb
   contradiction
+
+-- Practice Session - May 17, 2024
+
+example (A B : Prop) (g : A → B) (b : ¬ B) : ¬ A := by
+  by_contra h
+  apply g at h
+  contradiction
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x xa
+  exact And.intro (h1 xa) (h2 xa)
+
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋃₀ F ⊆ ⋃₀ G := by
+  intro x
+  rw[Set.mem_sUnion]
+  rw[Set.mem_sUnion]
+  intro th
+  rcases th with ⟨t, th⟩
+  have tg : t ∈ G := h1 th.left
+  use t
+  exact And.intro tg th.right
+
+example (n : ℕ) : (∑ i : Fin n, (2 * (i : ℕ) + 1)) = n ^ 2 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (x y : ℤ) (h₂ : 5 * y ≤ 35 - 2 * x) (h₃ : 2 * y ≤ x + 3) : y ≤ 5 := by
+  linarith
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  ext x
+  rw[Set.mem_compl_iff]
+  apply Iff.intro
+  intro xabc
+  simp at xabc
+  push_neg at xabc
+  assumption
+  intro xacbc
+  simp
+  push_neg
+  assumption
+
+example (n : ℕ) : (∑ i : Fin n, (2 * (i : ℕ) + 1)) = n ^ 2 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (n : ℕ) (h : 2 ≤ n) : n ≠ 0 := by
+  linarith
+
+example (A B : Set U) : A ∪ B = ⋃₀ {A, B} := by
+  ext x
+  rw[Set.mem_sUnion]
+  apply Iff.intro
+  intro xab
+  simp
+  rcases xab with xa | xb
+  exact Or.inl xa
+  exact Or.inr xb
+
+  intro h
+  rcases h with ⟨t, th⟩
+  rcases th with ⟨tab, xt⟩
+  rcases tab with ta | tb
+  rw[ta] at xt
+  exact Or.inl xt
+  rw[tb] at xt
+  exact Or.inr xt
+
+example (n : ℕ) (h : Odd (n ^ 2)) : Odd n := by
+  revert h
+  contrapose
+  rw[Nat.odd_iff_not_even]
+  rw[Nat.odd_iff_not_even]
+  push_neg
+  unfold Even
+  intro h
+  rcases h with ⟨r, hr⟩
+  use 2*r^2
+  rw[hr]
+  ring
+
+example (A B : Set U) : A ⊆ B ↔ Bᶜ ⊆ Aᶜ := by
+  apply Iff.intro
+
+  intro h
+  intro x xbc
+  simp
+  by_contra oops
+  apply h at oops
+  contradiction
+
+  intro h
+  simp at h -- :) the other case can be about this small too or the entire proof can be a simp
+  assumption
+
+example (n : ℕ) : (∑ i : Fin n, (2 * (i : ℕ) + 1)) = n ^ 2 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Nat.succ_eq_one_add]
+    ring
+
+example (A B : Set U) : A ∪ B = ⋃₀ {A, B} := by
+  ext x
+  rw[Set.mem_sUnion]
+  apply Iff.intro
+
+  intro xaub
+  rcases xaub with xa | xb
+  use A
+  simp
+  assumption
+  use B
+  simp
+  assumption
+
+  intro h
+  rcases h with ⟨t, th⟩
+  rcases th with ⟨tab, xt⟩
+  rcases tab with ta | tb
+  rw[ta] at xt
+  exact Or.inl xt
+  rw[tb] at xt
+  exact Or.inr xt
