@@ -1,8 +1,10 @@
 -- This module serves as the root of the `LeanTest` library.
 -- Import modules here that should be built as part of the library.
 
+import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Subset
+import «LeanBook».Chapter02
 
 theorem one_equals_one : 1 = 1 := by
   rfl
@@ -84,7 +86,7 @@ theorem Subset.trans2 {A B C : Set U} (h1 : A ⊆ B) (h2 : B ⊆ C) : A ⊆ C :=
   intro xinA -- x ∈ A from the revised goal
   exact h2 (h1 xinA)
 
-#check Subset.trans
+--#check Subset.trans
 
 
 -- --------------------------------- --
@@ -222,6 +224,10 @@ example (x : U) (A B : Set U) (h : x ∈ A ∧ x ∈ B) : x ∈ A := by
 -- --------------------------------- --
 example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
   rewrite [Set.mem_inter_iff x A B] at h
+  exact h.right
+
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  rewrite [Set.mem_inter_iff] at h
   exact h.right
 
 -- Without the rewrite.
@@ -633,3 +639,84 @@ example (A B C : Set U) (h1 : A ∪ C ⊆ B ∪ C) (h2 : A ∩ C ⊆ B ∩ C) : 
   exact xB
   have xBnC : x ∈ B ∩ C := h2 (And.intro xA xC)
   exact xBnC.left
+
+-- ------------------------------------- --
+--  Family Intersection World - Level 1  --
+-- ------------------------------------- --
+-- TODO: Come back and study this.
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  -- We need an element to do element based arguments.
+  -- Let this be the element.
+  intro x
+
+  -- We start with this goal
+  --   ⋂₀ F ⊆ A
+  -- and we want to transform it into the following
+  --   (∀ t ∈ F, x ∈ t) → x ∈ A
+  -- which states that if x is in every set in F, then x ∈ A.
+  rewrite [Set.mem_sInter]
+
+  -- Suppose ∀ t ∈ F, x ∈ t ...
+  -- This is shorthand for ∀ t, t ∈ F → x ∈ t
+  --
+  -- !!!! This is the point we're supposing that x ∈ ⋂₀ F ...
+  intro sup
+
+  -- Since A ∈ F, by the supposition, it must be the case that x ∈ A.
+  apply sup at h1
+
+  -- x ∈ A is exactly what want to show.
+  exact h1
+
+-- ------------------------------------- --
+--  Family Intersection World - Level 2  --
+-- ------------------------------------- --
+example (F G : Set (Set U)) (h1 : F ⊆ G) : ⋂₀ G ⊆ ⋂₀ F := by
+  intro x
+
+  rewrite [Set.mem_sInter]
+  rewrite [Set.mem_sInter]
+
+  intro sup
+
+  -- Before this command, the goal is
+  --   ∀ t ∈ F, x ∈ t
+  -- and after intro will become
+  --   t ∈ F → x ∈ t
+  intro t
+
+  intro tF
+  apply h1 at tF
+  apply sup at tF
+  exact tF
+
+
+-- ------------------------------------- --
+--  Family Intersection World - Level 3  --
+-- ------------------------------------- --
+-- stucky's solution
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  apply Set.Subset.antisymm
+  intro x xAB
+  rw [Set.mem_sInter]
+  intro t
+  --rw[mem_pair]
+  intro tAB
+  cases' tAB with tA tB
+  rw[tA]
+  apply xAB.left
+  rw[tB]
+  exact xAB.right
+
+  intro x xPAIR
+  apply And.intro
+
+  apply xPAIR
+  --rw[mem_pair]
+  have h : A=A := by rfl
+  exact Or.inl h
+
+  apply xPAIR
+  --rw[mem_pair]
+  have h : B=B := by rfl
+  exact Or.inr h
