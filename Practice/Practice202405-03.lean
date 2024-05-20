@@ -176,3 +176,60 @@ example (F G : Set (Set U)) : ⋃₀ (F ∪ G) = (⋃₀ F) ∪ (⋃₀ G) := by
   rcases tg with ⟨t, th⟩
   use t
   exact ⟨Or.inr th.left, th.right⟩
+
+-- Practice Session - May 20, 2024
+
+example (A B : Prop) (hA : A) : A ∨ (¬ B) := by
+  exact Or.inl hA
+
+example (A B : Prop) (h : (A ∧ B) ∨ A) : A := by
+  rcases h with ab | a
+  exact ab.left
+  exact a
+
+example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s := by
+  apply Iff.intro
+
+  intro aff
+  intro s sf
+  intro x h
+  apply aff at h
+  rw[Set.mem_sInter] at h
+  apply h at sf
+  assumption
+
+  intro fasf
+  intro x xa
+  rw[Set.mem_sInter]
+  intro t h
+  apply fasf at h
+  apply h at xa
+  assumption
+
+example (n m : ℕ) : ∑ i : Fin n, ∑ j : Fin m, ( 2 ^ (i : ℕ) * (1 + j) : ℕ) = ∑ j : Fin m, ∑ i : Fin n, ( 2 ^ (i : ℕ) * (1 + j) : ℕ) := by
+  rw[sum_comm]
+
+example (n : ℕ) (h : Odd n) : Odd (n ^ 2) := by
+  unfold Odd at h
+  unfold Odd
+  rcases h with ⟨k, hk⟩
+  use 2*k^2 + 2*k
+  rw[hk]
+  ring
+
+theorem arithmetic_sum
+ (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    ring
+    rw[mul_comm]
+    rw[Nat.succ_eq_add_one]
+    rw[n_ih]
+    ring
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  sorry
