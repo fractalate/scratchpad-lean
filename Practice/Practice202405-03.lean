@@ -231,5 +231,99 @@ theorem arithmetic_sum
     rw[n_ih]
     ring
 
+-- Practice Session - May 21, 2024
+
 example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
-  sorry
+  induction m with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw [Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    --rw [Fin.sum_univ_castSucc] -- Type specification is necessary.
+    rw [Fin.sum_univ_castSucc (n := n + 1)]
+    simp
+    rw[add_pow_two]
+    rw[arithmetic_sum]
+    ring
+
+example (A B : Prop) (h : A → ¬ B) (k : A ∧ B) : False := by
+  exact (h k.left) k.right
+
+example (A B C D E F G H I : Prop) (f : A → B) (g : C → B) (h : A → D) (i : B → E) (j : C → F) (k : E → D) (l : E → F) (m : G → D) (n : H → E) (p : F → I) (q : H → G) (r : H → I) : A → I := by
+  intro a
+  exact p (l (i (f a)))
+
+example {People : Type} [Inhabited People] (isDrinking : People → Prop) : ∃ (x : People), isDrinking x → ∀ (y : People), isDrinking y := by
+  by_cases h: ∀ (y : People), isDrinking y
+  use default
+  intro
+  exact h
+  push_neg at h
+  obtain ⟨y, hy⟩ := h
+  use y
+  intro y
+  contradiction
+
+example (A B : Prop) (mp : A → B) (mpr : B → A) : A ↔ B := by
+  apply Iff.intro
+  assumption
+  assumption
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Fin.sum_univ_castSucc (n := n + 1)]
+    simp
+    rw[add_pow_two]
+    rw[arithmetic_sum]
+    ring
+
+example (n : ℕ) : (∑ i : Fin n, (2 * (i : ℕ) + 1)) = n ^ 2 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[Nat.succ_eq_add_one]
+    rw[n_ih]
+    ring
+
+example (A B : Prop) : (A → B) ↔ ¬ A ∨ B := by
+  apply Iff.intro
+
+  intro ab
+  by_cases h : A
+  apply ab at h
+  exact Or.inr h
+  exact Or.inl h
+
+  intro nab
+  intro a
+  obtain na | b := nab
+  contradiction
+  assumption
+
+example : ¬False := by
+  trivial
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[Fin.sum_univ_castSucc (n := n + 1)]
+    rw[n_ih]
+    simp
+    rw[add_pow_two]
+    rw[arithmetic_sum]
+    ring
