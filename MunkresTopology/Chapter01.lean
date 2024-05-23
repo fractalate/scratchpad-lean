@@ -5,6 +5,8 @@ import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Subset
 
+open Finset
+
 
 ---------------------------
 -- Chapter 1, Exercise 1 --
@@ -12,7 +14,7 @@ import Mathlib.Data.Set.Subset
 
 -- Distributive Laws for ∪ and ∩
 
-theorem MunkresCh1Ex1Part1 {U} (A B C : Set U) : A ∩ (B ∪ C) = A ∩ B ∪ A ∩ C := by
+theorem MunkresCh1Ex1PartA {U} (A B C : Set U) : A ∩ (B ∪ C) = A ∩ B ∪ A ∩ C := by
   ext x
   apply Iff.intro
 
@@ -26,7 +28,7 @@ theorem MunkresCh1Ex1Part1 {U} (A B C : Set U) : A ∩ (B ∪ C) = A ∩ B ∪ A
   exact ⟨xab.left, Or.inl xab.right⟩
   exact ⟨xac.left, Or.inr xac.right⟩
 
-theorem MunkresCh1Ex1Part2 {U} (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+theorem MunkresCh1Ex1PartB {U} (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
   ext x
   apply Iff.intro
 
@@ -45,7 +47,7 @@ theorem MunkresCh1Ex1Part2 {U} (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩
 
 -- DeMorgan's Laws
 
-theorem MunkresCh1Ex1Part3 {U} (A B C : Set U) : A \ (B ∪ C) = (A \ B) ∩ (A \ C) := by
+theorem MunkresCh1Ex1PartC {U} (A B C : Set U) : A \ (B ∪ C) = (A \ B) ∩ (A \ C) := by
   ext x
   apply Iff.intro
 
@@ -65,7 +67,7 @@ theorem MunkresCh1Ex1Part3 {U} (A B C : Set U) : A \ (B ∪ C) = (A \ B) ∩ (A 
   rw [← Set.mem_compl_iff, Set.compl_union]
   exact ⟨xab.right, xac.right⟩
 
-theorem MunkresCh1Ex1Part4 {U} (A B C : Set U) : A \ (B ∩ C) = (A \ B) ∪ (A \ C) := by
+theorem MunkresCh1Ex1PartD {U} (A B C : Set U) : A \ (B ∩ C) = (A \ B) ∪ (A \ C) := by
   ext x
   apply Iff.intro
 
