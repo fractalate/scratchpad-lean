@@ -327,3 +327,25 @@ example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (
     rw[add_pow_two]
     rw[arithmetic_sum]
     ring
+
+-- Practice Session - May 24, 2024
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  rw[Set.mem_sInter]
+
+  apply Iff.intro
+  intro xab
+  intro t tab
+  rcases tab with xa | xb
+  rw[← xa] at xab
+  exact xab.left
+  rw[← xb] at xab
+  exact xab.right
+
+  intro tabxt
+  apply And.intro
+  apply tabxt
+  exact Or.inl rfl
+  apply tabxt
+  exact Or.inr rfl
