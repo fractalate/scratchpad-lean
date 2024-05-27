@@ -173,3 +173,137 @@ example {A B C : Set U} (h1 : A ⊆ B) (h2 : B ⊆ C) : A ⊆ C := by
   apply h1 at hx
   apply h2 at hx
   assumption
+
+-- Practice Session - May 27, 2024
+
+example (A B : Prop) (hB : B) : A → (A ∧ B) := by
+  intro hA
+  exact ⟨hA, hB⟩
+
+example (A : Prop) : ¬A ∨ A := by
+  by_cases a : A
+  exact Or.inr a
+  exact Or.inl a
+
+example (n : ℕ) (h : Odd (n ^ 2)): Odd n := by
+  contrapose h
+  revert h
+  rw[Nat.odd_iff_not_even]
+  rw[Nat.odd_iff_not_even]
+  push_neg
+  unfold Even
+  intro h
+  obtain ⟨r, hr⟩ := h
+  use 2*r^2
+  rw[hr]
+  ring
+
+example (x : U) (A B : Set U) (h1 : A ⊆ B) (h2 : x ∈ A) : x ∈ B := by
+  apply h1 at h2
+  assumption
+
+example (A B : Set U) : A ∪ B = ⋃₀ {A, B} := by
+  ext x
+  apply Iff.intro
+
+  intro xab
+  obtain xa | xb := xab
+  use A
+  exact ⟨Or.inl rfl, xa⟩
+  use B
+  exact ⟨Or.inr rfl, xb⟩
+
+  intro xab
+  obtain ⟨t, th⟩ := xab
+  obtain ta | tb := th.left
+  rw[ta] at th
+  exact Or.inl th.right
+  rw[tb] at th
+  exact Or.inr th.right
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x xgg
+  by_cases h : x ∈ A
+  exact Or.inl h
+  apply Or.inr
+  intro t tf
+  apply h1 at tf
+  apply xgg at tf
+  obtain xa | xt := tf
+  contradiction
+  assumption
+
+example (A B : Prop) (hA : A) (hB : B) : A ∧ B := by
+  tauto
+
+example (A B : Prop) : (A ↔ B) → (A → B) := by
+  intro aiffb
+  rw[aiffb]
+  simp
+
+example (n : ℕ) (h : n = 10) (g : n ≠ 10) : n = 42 := by
+  contradiction
+
+example (A B C : Set U) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  rw[Set.inter_union_distrib_left]
+
+example (n : ℕ) (h : n ≠ n) : n = 37 := by
+  contradiction
+
+example (A : Set U) (F : Set (Set U)) (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
+  intro x xf
+  apply xf at h1
+  assumption
+
+example (a b c d : ℕ) (h₁ : c = d) (h₂ : a = b) (h₃ : a = d) : b = c := by
+  rw[← h₂]
+  rw[h₃]
+  rw[← h₁]
+
+example (A B : Set U) : B ⊆ A ∪ B := by
+  intro x xb
+  exact Or.inr xb
+
+example (A B : Prop) (hA : A) (h : A → B) : B := by
+  apply h at hA
+  assumption
+
+example (x : U) (A B : Set U) (h : x ∈ A ∩ B) : x ∈ B := by
+  exact h.right
+
+theorem arithmetic_sum
+ (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    ring
+    rw[mul_comm]
+    rw[Nat.succ_eq_add_one]
+    rw[n_ih]
+    ring
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[Fin.sum_univ_castSucc (n := n + 1)]
+    simp
+    rw[n_ih]
+    rw[add_pow_two]
+    rw[arithmetic_sum]
+    ring
+
+example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
+  rw[Set.union_comm]
+
+theorem inter_subset_swap (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+  rw[Set.inter_comm]
+
+theorem union_distrib_left (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  rw[Set.union_inter_distrib_left]
