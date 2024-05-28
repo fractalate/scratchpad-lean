@@ -94,22 +94,18 @@ theorem MunkresCh1Ex1PartD {U} (A B C : Set U) : A \ (B ∩ C) = (A \ B) ∪ (A 
 -- Chapter 1, Exercise 2 --
 ---------------------------
 
--- TODO: Counter example
--- Given (x : U) (or alternatively use ℕ or something)
--- A = {x}
--- B = {x}
--- C = {}
--- A ⊆ (B ∪ C), but ¬(A ⊆ C).
-theorem MunkresCh1Ex2PartA {U} (A B C : Set U) (h : A ⊆ B ∧ A ⊆ C ↔ A ⊆ (B ∪ C)) : False := by
-  sorry
+-- The statement
+--   A ⊆ B ∧ A ⊆ C ↔ A ⊆ (B ∪ C)
+-- is not generally true; for example, if
+--   A = {x}
+--   B = {x}
+--   and C = {}
+-- we have A ⊆ (B ∪ C), but ¬(A ⊆ C).
+theorem MunkresCh1Ex2PartA {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∧ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
+  use { default }
+  use { default }
+  use {}
+  simp
 
-theorem MunkresCh1Ex2PartB {U} (A B C : Set U) : A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C):= by
-  apply Iff.intro
-
-  intro abac
-  intro x xa
-  obtain ab | ac := abac
-  exact Or.inl (ab xa)
-  exact Or.inr (ac xa)
-
+theorem MunkresCh1Ex2PartB {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
   sorry
