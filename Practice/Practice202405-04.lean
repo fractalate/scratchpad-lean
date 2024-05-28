@@ -302,8 +302,87 @@ example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (
 example (A B : Set U) : A ∪ B ⊆ B ∪ A := by
   rw[Set.union_comm]
 
-theorem inter_subset_swap (A B : Set U) : A ∩ B ⊆ B ∩ A := by
+example (A B : Set U) : A ∩ B ⊆ B ∩ A := by
   rw[Set.inter_comm]
 
-theorem union_distrib_left (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+example (A B C : Set U) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
   rw[Set.union_inter_distrib_left]
+
+-- Practice Session - May 28, 2024
+
+example (n : ℕ) (h : Even n) : Even (n ^ 2) := by
+  unfold Even
+  unfold Even at h
+  obtain ⟨r, hr⟩ := h
+  use 2*r^2
+  rw[hr]
+  ring
+
+example (A B : Prop) (h : A → ¬ B) (k₁ : A) (k₂ : B) : False := by
+  apply h at k₁
+  contradiction
+
+example (a b : ℕ) (h : a = b) (g : a + a ^ 2 = b + 1) : b + b ^ 2 = b + 1 := by
+  rw[h] at g
+  assumption
+
+example (A : Prop) (hA : A) : A := by
+  assumption
+
+example {X : Type} (P : X → Prop) : ¬ (∃ x : X, P x) ↔ ∀ x : X, ¬ P x := by
+  push_neg
+  rfl
+
+example {A : Type} (x : A) : x ∉ (∅ : Set A) := by
+  simp
+
+example (F G : Set (Set U)) : ⋃₀ (F ∪ G) = (⋃₀ F) ∪ (⋃₀ G) := by
+  ext x
+  apply Iff.intro
+
+  intro xfug
+  obtain ⟨T, hT⟩ := xfug
+  obtain TF | TG := hT.left
+  apply Or.inl
+  use T
+  exact ⟨TF, hT.right⟩
+  apply Or.inr
+  use T
+  exact ⟨TG, hT.right⟩
+
+  intro xfxg
+  obtain xf | xg := xfxg
+  obtain ⟨T, hT⟩ := xf
+  use T
+  exact ⟨Or.inl hT.left, hT.right⟩
+  obtain ⟨T, hT⟩ := xg
+  use T
+  exact ⟨Or.inr hT.left, hT.right⟩
+
+example (A B : Set U) : (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ := by
+  rw[← compl_compl (Aᶜ ∩ Bᶜ)]
+  rw[Set.compl_inter Aᶜ Bᶜ]
+  rw[compl_compl, compl_compl]
+
+example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
+  ext x
+  apply Iff.intro
+
+  intro xfg
+  constructor
+  intro t tf
+  have h2 : t ∈ F ∪ G := Or.inl tf
+  apply xfg at h2
+  assumption
+  intro t tg
+  have h2 : t ∈ F ∪ G := Or.inr tg
+  apply xfg at h2
+  assumption
+
+  intro xfg
+  intro t tfg
+  obtain tf | tg := tfg
+  apply xfg.left at tf
+  assumption
+  apply xfg.right at tg
+  assumption
