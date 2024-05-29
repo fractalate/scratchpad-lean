@@ -386,3 +386,20 @@ example (F G : Set (Set U)) : ⋂₀ (F ∪ G) = (⋂₀ F) ∩ (⋂₀ G) := by
   assumption
   apply xfg.right at tg
   assumption
+
+-- Practice Session - May 29, 2024
+
+example : 42 = 42 := by
+  rfl
+
+example (A B C : Prop) (h : A ∧ (B ∧ C)) : B := by
+  exact h.right.left
+
+example {A : Type} (x : A) : x ∈ (Set.univ : Set A) := by
+  simp
+
+example (A B : Set U) : A ∩ B = B ∩ A := by
+  apply Set.inter_comm
+
+example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
+  rfl
