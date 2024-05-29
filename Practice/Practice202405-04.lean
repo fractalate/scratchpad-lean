@@ -403,3 +403,51 @@ example (A B : Set U) : A ∩ B = B ∩ A := by
 
 example (n m : ℕ) : m < n ↔ m + 1 ≤ n := by
   rfl
+
+example (n : ℕ) (h : Odd (n ^ 2)) : Odd n := by
+  revert h
+  contrapose
+  rw[← Nat.even_iff_not_odd, ← Nat.even_iff_not_odd]
+  unfold Even
+  intro er
+  obtain ⟨r, hr⟩ := er
+  use 2*r^2
+  rw[hr]
+  ring
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  rw [@Set.sUnion_subset_iff]
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  apply Iff.intro
+
+  intro ufa
+  intro S SF x xS
+  have h : x ∈ ⋃₀ F := by use S
+  apply ufa at h
+  assumption
+
+  intro SFSA
+  intro x xf
+  rw[Set.mem_sUnion] at xf
+  obtain ⟨s, ⟨sf, xs⟩⟩ := xf
+  apply SFSA at sf
+  apply sf at xs
+  assumption
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  apply Iff.intro
+
+  intro fa
+  intro s sf x xs
+  have h : x ∈ ⋃₀ F := by use s
+  apply fa at h
+  assumption
+
+  intro sfsa
+  intro x xf
+  rw[Set.mem_sUnion] at xf
+  obtain ⟨s, ⟨sf, xs⟩⟩ := xf
+  apply sfsa at sf
+  apply sf at xs
+  assumption
