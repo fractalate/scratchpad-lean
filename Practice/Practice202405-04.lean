@@ -451,3 +451,61 @@ example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A 
   apply sfsa at sf
   apply sf at xs
   assumption
+
+-- Practice Session - May 30, 2024
+
+example (x y : ℤ) (h₂ : 5 * y ≤ 35 - 2 * x) (h₃ : 2 * y ≤ x + 3) : y ≤ 5 := by
+  linarith
+
+example (A : Set ℕ) : A ⊆ Set.univ := by
+  intro x
+  simp
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  apply Iff.intro
+
+  intro x s sf
+  simp at x
+  apply x at sf
+  assumption
+
+  intro sfsa x xf
+  obtain ⟨t, ⟨tf, xt⟩⟩ := xf
+  apply sfsa at tf
+  apply tf at xt
+  assumption
+
+example (A : Set U) (F : Set (Set U)) : A ∩ (⋃₀ F) = ⋃₀ {s | ∃ u ∈ F, s = A ∩ u} := by
+  ext x
+
+  apply Iff.intro
+  intro ⟨xa, u, uf, xu⟩
+  simp
+  use A ∩ u
+  constructor
+  use u
+  exact ⟨xa, xu⟩
+
+  intro ⟨u, ⟨s, sf, uas⟩, xu⟩
+  rw[uas] at xu
+  constructor
+  exact xu.left
+  use s
+  exact ⟨sf, xu.right⟩
+
+example (A : Set U) (F : Set (Set U)) : A ∩ (⋃₀ F) = ⋃₀ {s | ∃ u ∈ F, s = A ∩ u} := by
+  ext x
+  apply Iff.intro
+
+  intro ⟨xa, t, tf, xt⟩
+  use A ∩ t
+  constructor
+  use t
+  exact ⟨xa, xt⟩
+
+  intro ⟨t, ⟨s, sf, tas⟩, xt⟩
+  rw[tas] at xt
+  constructor
+  exact xt.left
+  use s
+  exact ⟨sf, xt.right⟩
