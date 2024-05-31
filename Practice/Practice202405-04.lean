@@ -5,6 +5,7 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Subset
 
 open Finset
+open Fintype
 open BigOperators
 
 example (F G : Set (Set U)) : ⋃₀ (F ∪ G) = (⋃₀ F) ∪ (⋃₀ G) := by
@@ -509,3 +510,96 @@ example (A : Set U) (F : Set (Set U)) : A ∩ (⋃₀ F) = ⋃₀ {s | ∃ u ∈
   exact xt.left
   use s
   exact ⟨sf, xt.right⟩
+
+-- Practice Session - May 31, 2024
+
+example (A B C : Prop) (f : A → B) (g : B → C) : A → C := by
+  intro a
+  exact g (f a)
+
+example {A : Type _} (s : Set A) : s ⊆ ∅ ↔ s = ∅ := by
+  apply Iff.intro
+
+  intro se
+  ext x
+  apply Iff.intro
+  intro x2
+  apply se at x2
+  assumption
+
+  intro xe
+  /-
+  rw[@Set.subset_empty_iff] at se
+  rw[se]
+  assumption
+  -/
+  by_contra
+  apply xe
+
+  intro se
+  rw[se]
+
+example (n : ℕ) : (∑ i : Fin n, (0 + 0)) = 0 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    rw[n_ih]
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  rw[@Set.mem_compl_iff, Set.mem_sUnion]
+  push_neg
+  apply Iff.intro
+
+  intro xfc
+  intro t tfc
+  apply xfc at tfc
+  rw[Set.mem_compl_iff] at tfc
+  push_neg at tfc
+  assumption
+
+  intro xsf
+  intro t tf
+  have h2 := xsf tᶜ
+  apply h2
+  rw [Set.mem_setOf, compl_compl]
+  assumption
+
+example {A : Type _} (s : Set A) : s ⊆ ∅ ↔ s = ∅ := by
+  apply Iff.intro
+
+  intro se
+  ext x
+  apply Iff.intro
+  intro xs
+  apply se at xs
+  assumption
+
+  intro xe
+  by_contra
+  apply xe
+
+  intro se
+  rw[se]
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  rw[Set.mem_compl_iff, Set.mem_sUnion, Set.mem_sInter]
+  push_neg
+
+  apply Iff.intro
+  intro tfxtc
+  intro t tsscf
+  rw[Set.mem_setOf] at tsscf
+  apply tfxtc at tsscf
+  simp at tsscf
+  assumption
+
+  intro tsscfxt
+  intro t tf
+  have h2 := tsscfxt tᶜ
+  apply h2
+  simp
+  assumption
