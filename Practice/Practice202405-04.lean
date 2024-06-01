@@ -603,3 +603,181 @@ example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
   apply h2
   simp
   assumption
+
+-- Practice Session - June 1, 2024
+
+example (n : ℕ) : 2 * (∑ i : Fin (n + 1), ↑i) = n * (n + 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[Nat.left_distrib]
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (A B : Set U) : A ∪ B = B ∪ A := by
+  --rw [@Set.union_comm]
+  ext x
+  apply Iff.intro
+
+  intro xab
+  obtain xa | xb := xab
+  exact Or.inr xa
+  exact Or.inl xb
+
+  intro xab
+  obtain xa | xb := xab
+  exact Or.inr xa
+  exact Or.inl xb
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  apply Iff.intro
+
+  intro se
+  rw[se]
+  simp
+
+  intro se
+  ext x
+  apply Iff.intro
+  intro xs
+  apply se at xs
+  exact xs
+
+  intro xe
+  by_contra
+  exact xe
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  rw [← Set.subset_empty_iff]
+  rfl
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  apply Iff.intro
+
+  intro se
+  intro x
+  rw[se]
+  rw[@Set.mem_empty_iff_false]
+  simp
+
+  intro se
+  apply Set.Subset.antisymm
+
+  intro x xs
+  simp
+  apply se at xs
+  assumption
+
+  intro x xs
+  simp at xs
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  apply Iff.intro
+
+  intro se
+  intro x
+  rw[se]
+  simp
+
+  intro se
+  rw[@Set.Subset.antisymm_iff]
+  apply And.intro
+  intro x xs
+  apply se at xs
+  assumption
+  intro x xe
+  by_contra
+  assumption
+
+example (n : ℕ) : (∑ i : Fin n, (2 * (i : ℕ) + 1)) = n ^ 2 := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw[Fin.sum_univ_castSucc]
+    simp
+    rw[n_ih]
+    rw[Nat.succ_eq_add_one]
+    ring
+
+example (n : ℕ) (h : 2 ≤ n) : n ≠ 0 := by
+  omega
+
+example (x y : ℕ) : (x + y) ^ 2 = x ^ 2 + 2 * x * y + y ^ 2 := by
+  ring
+
+example (F : Set (Set U)) : (⋂₀ F)ᶜ = ⋃₀ {s | sᶜ ∈ F} := by
+  ext x
+  apply Iff.intro
+
+  intro xfc
+  rw[Set.mem_compl_iff, Set.mem_sInter] at xfc
+  push_neg at xfc
+  obtain ⟨t, ⟨tf, xt⟩⟩ := xfc
+  use tᶜ
+  simp
+  exact ⟨tf, xt⟩
+
+  intro xinunion
+  obtain ⟨t, ⟨tinset, xt⟩⟩ := xinunion
+  rw[Set.mem_setOf] at tinset
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_sInter]
+  push_neg
+  use tᶜ
+  simp
+  exact ⟨tinset, xt⟩
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  apply Iff.intro
+
+  intro xufc
+  rw[Set.mem_compl_iff, Set.mem_sUnion] at xufc
+  push_neg at xufc
+  intro t
+  intro tset
+  apply xufc at tset
+  rw[← Set.mem_compl_iff, compl_compl] at tset
+  assumption
+
+  intro xinter
+  rw[Set.mem_sInter] at xinter
+  rw[Set.mem_compl_iff]
+  simp
+  intro t tf
+  by_contra h
+  have h2 := xinter tᶜ
+  rw[Set.mem_setOf] at h2
+  rw[compl_compl] at h2
+  apply h2 at tf
+  rw[Set.mem_compl_iff] at tf
+  contradiction
+
+-- This one is better.
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  rw[@Set.mem_compl_iff, Set.mem_sUnion]
+  push_neg
+  apply Iff.intro
+
+  intro xfc
+  intro t tfc
+  apply xfc at tfc
+  rw[Set.mem_compl_iff] at tfc
+  push_neg at tfc
+  assumption
+
+  intro xsf
+  intro t tf
+  have h2 := xsf tᶜ
+  apply h2
+  rw [Set.mem_setOf, compl_compl]
+  assumption
+
+example {A : Type _} (s : Set A) : s ⊆ ∅ ↔ s = ∅ := by
+  rw [@Set.subset_empty_iff]
