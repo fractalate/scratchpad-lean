@@ -102,11 +102,16 @@ theorem MunkresCh1Ex1PartD {U} (A B C : Set U) : A \ (B ∩ C) = (A \ B) ∪ (A 
 --   and C = {}
 -- we have A ⊆ (B ∪ C), but ¬(A ⊆ C).
 theorem MunkresCh1Ex2PartA {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∧ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
-  use {default}
-  use {default}
-  use {}
+  use {default}, {default}, {}
   simp
 
+-- The statement
+--   A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C)
+-- is not generally true; for example, if
+--   A = {b, c}
+--   B = {b}
+--   C = {c}
+-- we have A ⊆ (B ∪ C), but ¬(A ⊆ B ∨ A ⊆ C).
 theorem MunkresCh1Ex2PartB {U} [h : Nontrivial U] : ∃ (A B C : Set U), ¬(A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
   obtain ⟨b, ⟨c, hc⟩⟩ := h
   use {b, c}, {b}, {c}
@@ -114,3 +119,42 @@ theorem MunkresCh1Ex2PartB {U} [h : Nontrivial U] : ∃ (A B C : Set U), ¬(A �
   rw[ne_eq, ←false_iff, iff_comm] at hc
   rw[eq_comm, hc]; simp
   rw[Set.pair_comm]
+
+theorem MunkresCh1Ex2PartC {U} (A B C : Set U) : A ⊆ B ∧ A ⊆ C ↔ A ⊆ (B ∩ C) := by
+  rw [@Set.subset_inter_iff]
+
+-- The statement
+--   A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∩ C)
+-- is not generally true; for example, if
+--   A = {x}
+--   B = {}
+--   C = {x}
+-- we have (A ⊆ B ∨ A ⊆ C), but ¬(A ⊆ (B ∩ C)).
+theorem MunkresCh1Ex2PartD {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∩ C)) := by
+  use {default}, {}, {default}
+  simp
+
+-- The statement
+--   A \ (A \ B) = B
+-- is no generally true; for example, if
+--   A = {}
+--   B = {x}
+-- we have A \ (A \ B) = ∅ and B ≠ ∅.
+theorem MunkresCh1Ex2PartE {U} [Inhabited U] : ∃ A B : Set U, ¬(A \ (A \ B) = B) := by
+  use {}, {default}
+  simp
+  push_neg
+  unfold Set.Nonempty
+  by_contra h
+  push_neg at h
+  have h2 := h default
+  apply h2
+  simp
+
+-- However, the statement in part E becomes true when = is replaced by ⊆.
+theorem MunkresCh1Ex2PartE2 {U} (A B : Set U) : A \ (A \ B) ⊆ B := by
+  intro x
+  rw[Set.diff_eq, Set.diff_eq]
+  rw[Set.compl_inter, compl_compl]
+  rw[Set.inter_union_distrib_left, Set.inter_compl_self]
+  simp
