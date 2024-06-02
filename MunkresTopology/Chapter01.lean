@@ -107,20 +107,10 @@ theorem MunkresCh1Ex2PartA {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∧
   use {}
   simp
 
-theorem MunkresCh1Ex2PartB {U} (B C : Set U) [hb : Inhabited B] [hc : Inhabited C] : ∃ (A B C : Set U), ¬(A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
-  let b : U := hb.default
-  let c : U := hc.default
+theorem MunkresCh1Ex2PartB {U} [h : Nontrivial U] : ∃ (A B C : Set U), ¬(A ⊆ B ∨ A ⊆ C ↔ A ⊆ (B ∪ C)) := by
+  obtain ⟨b, ⟨c, hc⟩⟩ := h
   use {b, c}, {b}, {c}
-  have h : b ≠ c := by
-    sorry
-  have h2 : (c = b ∨ b = c) = False := by
-    rw [propext (or_iff_left h)]
-    by_contra x
-    push_neg at x
-    simp at x
-    rw[x] at h
-    contradiction
   simp
-  rw[h2]
-  simp
+  rw[ne_eq, ←false_iff, iff_comm] at hc
+  rw[eq_comm, hc]; simp
   rw[Set.pair_comm]
