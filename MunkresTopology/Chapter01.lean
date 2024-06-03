@@ -136,7 +136,7 @@ theorem MunkresCh1Ex2PartD {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ⊆ B ∨
 
 -- The statement
 --   A \ (A \ B) = B
--- is no generally true; for example, if
+-- is not generally true; for example, if
 --   A = {}
 --   B = {x}
 -- we have A \ (A \ B) = ∅ and B ≠ ∅.
@@ -158,3 +158,24 @@ theorem MunkresCh1Ex2PartE2 {U} (A B : Set U) : A \ (A \ B) ⊆ B := by
   rw[Set.compl_inter, compl_compl]
   rw[Set.inter_union_distrib_left, Set.inter_compl_self]
   simp
+
+-- The statement
+--   A \ (B \ A) = A \ B
+-- is not generally true; for example, if
+--   A = {x}
+--   B = {x}
+-- Then A \ (B \ A) = {x}, but A \ B = ∅ ≠ {x}.
+theorem MunkresCh1Ex2PartF {U} [Inhabited U] : ∃ (A B : Set U), ¬(A \ (B \ A) = A \ B) := by
+  use {default}, {default}
+  simp
+
+-- However, the statement in part F becomes true when the equation is
+-- reversed and = is replaced by ⊆.
+theorem MunkresCh1Ex2PartF2 {U} (A B : Set U) : A \ B ⊆ A \ (B \ A) := by
+  intro x ⟨xa, xb⟩
+  constructor
+  assumption
+  rw [@Set.mem_diff]
+  push_neg
+  intro oops
+  contradiction
