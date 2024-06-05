@@ -38,7 +38,7 @@ theorem arithmetic_sum
   | succ n n_ih =>
     rw[Fin.sum_univ_castSucc]
     simp
-    rw [Nat.mul_add]
+    rw[Nat.mul_add]
     rw[n_ih]
     rw[Nat.succ_eq_add_one]
     ring
@@ -122,3 +122,60 @@ example (A B : Prop) (g : A → B) (b : ¬ B) : ¬ A := by
 
 example {A : Type} (x : A) : x ∈ (Set.univ : Set A) := by
   simp
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  rw [@Set.sUnion_subset_iff]
+
+example (A : Set U) (F : Set (Set U)) : ⋃₀ F ⊆ A ↔ ∀ s ∈ F, s ⊆ A := by
+  apply Iff.intro
+
+  intro fa
+  intro s sf y ys
+  simp at fa
+  apply fa at sf
+  apply sf at ys
+  assumption
+
+  intro sfsa
+  intro y yf
+  obtain ⟨s, ⟨sf, ys⟩⟩ := yf
+  apply sfsa at ys
+  assumption
+  assumption
+
+example : ∀ (x : ℕ), (Even x) → Odd (1 + x) := by
+  unfold Even
+  unfold Odd
+  intro n
+  intro ⟨r, rh⟩
+  use r
+  rw [rh]
+  ring
+
+example (A B C : Set U) (h1 : A ∪ C ⊆ B ∪ C) (h2 : A ∩ C ⊆ B ∩ C) : A ⊆ B := by
+  intro x xa
+  have xbc := h1 (Or.inl xa)
+  obtain xb | xc := xbc
+  assumption
+  have xbc := h2 ⟨xa, xc⟩
+  exact xbc.left
+
+example {A : Type _} (s : Set A) : s.Nonempty ↔ s ≠ ∅ := by
+  push_neg
+  rfl
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  apply Iff.intro
+  intro se
+  rw [se]
+  simp
+
+  intro xa
+  ext x
+  apply Iff.intro
+  intro xs
+  apply xa at xs
+  contradiction
+
+  intro xe
+  contradiction
