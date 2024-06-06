@@ -179,3 +179,94 @@ example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
 
   intro xe
   contradiction
+
+-- Practice Session - June 6, 2024
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  apply Iff.intro
+
+  intro xff
+  rw[Set.mem_compl_iff, Set.mem_sUnion] at xff
+  push_neg at xff
+  intro s scf
+  apply xff at scf
+  simp at scf
+  assumption
+
+  intro xsf
+  rw[Set.mem_compl_iff]
+  rw[Set.mem_sUnion]
+  push_neg
+  intro t tf
+  rw [← @Set.mem_compl_iff]
+  apply xsf
+  rw [@Set.mem_setOf]
+  simp
+  assumption
+
+example (F : Set (Set U)) : (⋂₀ F)ᶜ = ⋃₀ {s | sᶜ ∈ F} := by
+  ext x
+  rw[Set.mem_compl_iff]
+  apply Iff.intro
+
+  intro xf
+  rw[Set.mem_sInter] at xf
+  push_neg at xf
+  obtain ⟨t, ⟨tf, xt⟩⟩ := xf
+  use tᶜ
+  simp
+  exact ⟨tf, xt⟩
+
+  intro xs
+  rw[Set.mem_sInter]
+  push_neg
+  obtain ⟨t, ⟨ts, xt⟩⟩ := xs
+  use tᶜ
+  simp
+  exact ⟨ts, xt⟩
+
+example (A : Set U) : ∃ s, s ⊆ A := by
+  use ∅
+  simp
+
+example (A B : Set ℕ) : (A ∪ ∅) ∩ B = A ∩ (Set.univ ∩ B) := by
+  simp only [Set.union_empty, Set.univ_inter]
+
+example {A : Type _} (s : Set A) : s ⊆ ∅ ↔ s = ∅ := by
+  apply Iff.intro
+
+  intro se
+  ext x
+  apply Iff.intro
+  intro xs
+  apply se at xs
+  assumption
+  intro xe
+  by_contra
+  use xe
+
+  intro se
+  rw[se]
+
+example (A B : Set U) : A ∩ B = ⋂₀ {A, B} := by
+  ext x
+  rw[Set.mem_sInter]
+  apply Iff.intro
+
+  intro ⟨xa, xb⟩
+  simp
+  exact ⟨xa, xb⟩
+
+  intro h
+  constructor
+  apply h
+  simp
+  apply h
+  simp
+
+example {x : U} {A B C : Set U} (h1 : A ⊆ B) (h2 : x ∈ B → x ∈ C) : x ∈ A → x ∈ C := by
+  intro xh
+  apply h1 at xh
+  apply h2 at xh
+  assumption
