@@ -179,3 +179,24 @@ theorem MunkresCh1Ex2PartF2 {U} (A B : Set U) : A \ B ⊆ A \ (B \ A) := by
   push_neg
   intro oops
   contradiction
+
+theorem MunkresCh1Ex2PartG {U} (A B C : Set U) : A ∩ (B \ C) = (A ∩ B) \ (A ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro ⟨xa, xb, xc⟩
+  simp
+  constructor
+  exact ⟨xa, xb⟩
+  intro
+  assumption
+
+  intro ⟨⟨xa, xb⟩, xc⟩
+  rw[← Set.mem_compl_iff, Set.compl_inter] at xc
+  obtain xa | xc := xc
+  contradiction
+  simp
+  exact ⟨xa, xb, xc⟩
+
+  -- Or more simply, just:
+  --rw [@Set.inter_diff_distrib_left]
