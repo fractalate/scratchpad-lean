@@ -270,3 +270,12 @@ example {x : U} {A B C : Set U} (h1 : A ⊆ B) (h2 : x ∈ B → x ∈ C) : x �
   apply h1 at xh
   apply h2 at xh
   assumption
+
+-- Practice Session - June 8, 2024
+
+example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
+  simp
+  assumption
+
+example : 1 + 1 = 2 := by
+  ring
