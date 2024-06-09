@@ -279,3 +279,11 @@ example {A B : Set U} (h1 : A ⊆ B) : Bᶜ ⊆ Aᶜ := by
 
 example : 1 + 1 = 2 := by
   ring
+
+-- Practice Session - June 9, 2024
+
+example (A B : Prop) : A → B ↔ (¬ B → ¬ A) := by
+  tauto
+
+example (A : Prop) (h : False) : A := by
+  contradiction
