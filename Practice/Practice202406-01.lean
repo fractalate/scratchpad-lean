@@ -287,3 +287,42 @@ example (A B : Prop) : A → B ↔ (¬ B → ¬ A) := by
 
 example (A : Prop) (h : False) : A := by
   contradiction
+
+-- Practice Sessoin - June 12, 2024
+
+example (A B : Prop) : A → B ↔ (¬ B → ¬ A) := by
+  tauto
+
+example (A : Prop) (h : False) : A := by
+  contradiction
+
+example {A : Type _} (s : Set A) : s.Nonempty ↔ s ≠ ∅ := by
+  simp
+  push_neg
+  rfl
+
+example (A B C : Prop) (h : A ↔ B) (g : B → C) : A → C := by
+  intro x
+  rw[h] at x
+  apply g at x
+  assumption
+
+example (A B : Set ℕ) : (A ∪ ∅) ∩ B = A ∩ (Set.univ ∩ B) := by
+  simp
+
+example (A B : Set ℕ) : (A ∪ ∅) ∩ B = A ∩ (Set.univ ∩ B) := by
+  rw [@Set.union_empty]
+  rw [@Set.univ_inter]
+
+example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : ℕ)) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw [@Fin.sum_univ_castSucc]
+    simp
+    rw [@Fin.sum_univ_castSucc]
+    simp
+    rw [n_ih]
+    rw [@Nat.succ_eq_add_one]
+    ring
