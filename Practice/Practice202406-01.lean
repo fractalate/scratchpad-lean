@@ -326,3 +326,57 @@ example (n : ℕ) : ∑ i : Fin n, ((i : ℕ) + 1) = n + (∑ i : Fin n, (i : �
     rw [n_ih]
     rw [@Nat.succ_eq_add_one]
     ring
+
+-- Practice Session - June 13, 2024
+
+example (A B C : Set U) (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
+  intro x xa
+  exact ⟨h1 xa, h2 xa⟩
+
+example (x : U) (A : Set U) (h : x ∈ A) : x ∈ A := by
+  assumption
+
+example (A B : Prop) (h : A ↔ B) : B ↔ A := by
+  rw[h]
+
+example (A : Set U) (F : Set (Set U)) : A ∩ (⋃₀ F) = ⋃₀ {s | ∃ u ∈ F, s = A ∩ u} := by
+  ext x
+  apply Iff.intro
+
+  intro ⟨xa, xf⟩
+  obtain ⟨t, tf, xt⟩ := xf
+  use A ∩ t
+  constructor
+  use t
+  exact ⟨xa, xt⟩
+
+  intro xu
+  obtain ⟨s, ⟨t, tf, sat⟩, xs⟩ := xu
+  rw[sat] at xs
+  constructor
+  exact xs.left
+  use t
+  exact ⟨tf, xs.right⟩
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  apply Iff.intro
+
+  intro xufc
+  rw [@Set.mem_compl_iff, @Set.mem_sUnion] at xufc
+  push_neg at xufc
+  rw [@Set.mem_sInter]
+  intro t tcf
+  rw [Set.mem_setOf] at tcf
+  have h2 := xufc tᶜ tcf
+  simp at h2
+  assumption
+
+  intro xsf
+  rw [@Set.mem_compl_iff, @Set.mem_sUnion]
+  push_neg
+  intro t tf
+  have h2 := xsf tᶜ
+  simp at h2
+  apply h2 at tf
+  assumption
