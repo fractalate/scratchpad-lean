@@ -380,3 +380,117 @@ example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
   simp at h2
   apply h2 at tf
   assumption
+
+-- Practice Session - June 16, 2024
+
+example (F : Set (Set U)) : (⋃₀ F)ᶜ = ⋂₀ {s | sᶜ ∈ F} := by
+  ext x
+  apply Iff.intro
+
+  intro xufc
+  rw [@Set.mem_compl_iff, @Set.mem_sUnion] at xufc
+  push_neg at xufc
+  intro t tscf
+  have h := xufc tᶜ tscf
+  simp at h
+  assumption
+
+  intro xnsf
+  rw [Set.mem_compl_iff, @Set.mem_sUnion]
+  push_neg
+  intro t tf
+  have h2 := xnsf tᶜ
+  simp at h2
+  apply h2 at tf
+  assumption
+
+example (A B : Set U) : (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ := by
+  ext x
+  apply Iff.intro
+
+  intro xabc
+  simp at xabc
+  by_cases h : x ∈ A
+  apply xabc at h
+  exact Or.inr h
+  exact Or.inl h
+
+  intro xacbc
+  simp
+  obtain xac | xbc := xacbc
+  intro
+  contradiction
+  intro
+  assumption
+
+example (A B C : Set U) (h1 : A ⊆ C) (h2 : B ⊆ C) : A ∪ B ⊆ C := by
+  intro x xab
+  obtain xa | xb := xab
+  apply h1 at xa
+  assumption
+  apply h2 at xb
+  assumption
+
+example (n m : ℕ) : ∑ i : Fin n, ∑ j : Fin m, ( 2 ^ (i : ℕ) * (1 + j) : ℕ) = ∑ j : Fin m, ∑ i : Fin n, ( 2 ^ (i : ℕ) * (1 + j) : ℕ) := by
+  rw[sum_comm]
+
+example (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  simp
+  tauto
+
+example (A B C : Set U) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  ext x
+  apply Iff.intro
+
+  intro ⟨⟨xa, xb⟩, xc⟩
+  exact ⟨xa, ⟨xb, xc⟩⟩
+  intro ⟨xa, ⟨xb, xc⟩⟩
+  exact ⟨⟨xa, xb⟩, xc⟩
+
+example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
+  rw[←h₂]
+  rw[h₁]
+  assumption
+
+example (A B : Set ℕ) : Set.univ \ (A ∩ B) = (Set.univ \ A) ∪ (Set.univ \ B) ∪ (A \ B) := by
+  ext x
+  simp
+  apply Iff.intro
+
+  intro xab
+  simp at xab
+  by_cases h : x ∈ A
+  exact Or.inr ⟨h, (xab h)⟩
+  exact Or.inl (Or.inl h)
+
+  intro xab
+  obtain xab | xab := xab
+  obtain xa | xb := xab
+  intro
+  contradiction
+  intro
+  assumption
+  intro
+  exact xab.right
+
+example (x : U) (A B : Set U) (h : x ∈ A) : x ∈ A ∨ x ∈ B := by
+  apply Or.inl
+  assumption
+
+example (A : Set ℕ) : A ⊆ Set.univ := by
+  intro x _xa
+  trivial
+
+example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s := by
+  apply Iff.intro
+
+  intro af s sf x xa
+  apply af at xa
+  apply xa at sf
+  assumption
+
+  intro sfas x xa t tf
+  apply sfas at tf
+  apply tf at xa
+  assumption
