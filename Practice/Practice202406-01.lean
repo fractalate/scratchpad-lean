@@ -494,3 +494,85 @@ example (A : Set U) (F : Set (Set U)) : A ⊆ ⋂₀ F ↔ ∀ s ∈ F, A ⊆ s 
   apply sfas at tf
   apply tf at xa
   assumption
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ n n_ih =>
+    rw [@Fin.sum_univ_castSucc]
+    simp
+    rw [@Fin.sum_univ_castSucc (n := n + 1)]
+    simp
+    rw [n_ih]
+    rw [add_pow_two]
+    rw [arithmetic_sum]
+    ring
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ m m_ih =>
+    rw [@Fin.sum_univ_castSucc]
+    simp
+    rw [@Fin.sum_univ_castSucc (n := m + 1)]
+    simp
+    rw [m_ih]
+    rw [add_pow_two]
+    rw [arithmetic_sum]
+    ring
+
+example (m : ℕ) : (∑ i : Fin (m + 1), (i : ℕ)^3) = (∑ i : Fin (m + 1), (i : ℕ))^2 := by
+  induction m with
+  | zero =>
+    simp
+  | succ m m_ih =>
+    rw [@Fin.sum_univ_castSucc]
+    nth_rw 2 [@Fin.sum_univ_castSucc]
+    simp
+    rw [m_ih]
+    rw [add_pow_two]
+    rw [arithmetic_sum]
+    ring
+
+example {A : Type _} (s : Set A) : s = ∅ ↔ ∀ x, x ∉ s := by
+  rw [← Set.subset_empty_iff]
+  rfl
+
+  /-
+  apply Iff.intro
+
+  intro se
+  rw [se]
+  intro x
+  rw [@Set.mem_empty_iff_false]
+  trivial
+
+  intro h
+  apply Set.Subset.antisymm
+  intro x
+  apply h at x
+  intro h2
+  contradiction
+
+  intro x xe
+  apply h at x
+  contradiction
+  -/
+
+example (A : Set U) (F G : Set (Set U)) (h1 : ∀ s ∈ F, A ∪ s ∈ G) : ⋂₀ G ⊆ A ∪ (⋂₀ F) := by
+  intro x tgxt
+  rw [Set.mem_sInter] at tgxt
+  simp
+  by_cases h : x ∈ A
+
+  exact Or.inl h
+
+  apply Or.inr
+  intro t tf
+  apply h1 at tf
+  apply tgxt at tf
+  obtain xa | xt := tf
+  contradiction
+  assumption
