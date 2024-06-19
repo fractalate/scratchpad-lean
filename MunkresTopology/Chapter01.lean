@@ -200,3 +200,62 @@ theorem MunkresCh1Ex2PartG {U} (A B C : Set U) : A ∩ (B \ C) = (A ∩ B) \ (A 
 
   -- Or more simply, just:
   --rw [@Set.inter_diff_distrib_left]
+
+
+-- The statement
+--   A ∪ (B \ C) = (A ∪ B) \ (A ∪ C)
+-- is not generally true. If
+--   A = {x}
+--   B = ∅
+--   C = ∅
+-- then we have A ∪ (B \ C) = {x} and
+-- (A ∪ B) \ (A ∪ C) = ∅.
+theorem MunkresCh1Ex2PargH {U} [Inhabited U] : ∃ A B C : Set U, ¬(A ∪ (B \ C) = (A ∪ B) \ (A ∪ C)) := by
+  use {default}, {}, {}
+  simp
+
+-- However, the statement in part H becomes true when the equation is
+-- reversed and = is replaced by ⊆.
+theorem MunkresCh1Ex2PargH2 {U} (A B C : Set U) : (A ∪ B) \ (A ∪ C) ⊆ A ∪ (B \ C) := by
+  intro x
+  simp
+  intro xabc xac
+  push_neg at xac
+  obtain ⟨_, xnc⟩ := xac
+  obtain xa | xb := xabc
+  exact Or.inl xa
+  exact Or.inr ⟨xb, xnc⟩
+
+theorem MunkresCh1Ex2PartI {U} (A B : Set U) : (A ∩ B) ∪ (A \ B) = A := by
+  ext x
+  apply Iff.intro
+
+  intro xab
+  obtain xab | xab := xab
+  exact xab.left
+  exact xab.left
+
+  intro xa
+  by_cases xb : x ∈ B
+  exact Or.inl ⟨xa, xb⟩
+  exact Or.inr ⟨xa, xb⟩
+
+  -- Or more simply, just:
+  --rw [@Set.inter_union_diff]
+
+-- For part J, the challenge is currently figuring out how to
+-- work with Cartesian products of sets. The × notation works
+-- between types, not sets, so this isn't valid:
+--
+--   (A ⊆ C) ∧ (B ⊆ D) → (A × B) ⊆ (C × D)
+--
+-- There must be some way to talk about cartesian products of
+-- arbitrary sets. There is the notion of Fin 2 → U to talk about
+-- U × U, but what about general A × B?
+
+/-
+theorem MunkresCh1Ex2PartJ {α β} (A C : Set α) (B D : Set β) : (A ⊆ C) ∧ (B ⊆ D) → E ⊆ F := by
+  intro ⟨ac, bd⟩
+  intro x xe
+  exact x.1
+-/
