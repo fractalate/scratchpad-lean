@@ -252,6 +252,12 @@ theorem MunkresCh1Ex2PartI {U} (A B : Set U) : (A ∩ B) ∪ (A \ B) = A := by
 -- There must be some way to talk about cartesian products of
 -- arbitrary sets. There is the notion of Fin 2 → U to talk about
 -- U × U, but what about general A × B?
+--
+-- Maybe I can have C and D be types and A and B be sets of those types
+-- respectively. That'll give me a valid C × D I think...
+-- but what about A × B still? How do I preserve the A ⊆ C notation?
+-- If C was a type, then A would be a Set C, but then you don't have to
+-- denote A ⊆ C, it's just given.
 
 /-
 theorem MunkresCh1Ex2PartJ {α β} (A C : Set α) (B D : Set β) : (A ⊆ C) ∧ (B ⊆ D) → E ⊆ F := by
